@@ -38,7 +38,7 @@ function Home({ onButtonClick }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        Hello Dingus
+        NCR ATM
       </motion.h1>
       <motion.h2 
         className="text-center text-2xl md:text-3xl mb-8 text-blue-500 dark:text-blue-400"
@@ -46,32 +46,32 @@ function Home({ onButtonClick }) {
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.2 }}
       >
-        Let's get started
+        Glory to the New California Republic
       </motion.h2>
       
       <motion.p 
-        className="text-center text-xl mb-8 max-w-2xl mx-auto"
+        className="text-center text-xl mb-8 max-w-2xl mx-auto text-white"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
       >
-        click the button or im going to eat your cookies
+        To Start Entering Your Transaction, Click Below
       </motion.p>
 
       <motion.button
-        className="text-center text-xl mb-8 max-w-2xl mx-auto"
+        className="text-center text-xl mt-4 px-4 py-2 bg-red-500 text-white font-bold rounded"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5, delay: 0.6 }}
         onClick={onButtonClick}
       >
-        lookie lookie
+        Enter PIN
       </motion.button>
     </div>
   );
 }
 
-function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
+function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, }) {
   const [accountNumber, setLocalAccountNumber] = useState("");
   const [pinNumber, setLocalPinNumber] = useState("");
   const [isEnteringPin, setIsEnteringPin] = useState(false);
@@ -107,6 +107,13 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
     }
   };
 
+  const handleGoBack = () => {
+    setShowSummary(false);
+    setAccountNumber("");
+    setPinNumber("");
+    window.location.reload();
+  };
+
   return (
     <motion.div 
       className="flex flex-col items-center"
@@ -114,21 +121,21 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <label htmlFor="numeric-field" className="text-white mb-2">
+      <label htmlFor="numeric-field" className="text-white font-bold mb-2">
         {isEnteringPin ? "Enter your PIN" : "Enter your Account Number"}
       </label>
       <input 
         type="text"
         value={isEnteringPin ? pinNumber : accountNumber}
         readOnly
-        className="border p-2 mb-4 border-gray-300"
+        className="border p-2 mb-4 border-gray-300 text-black"
         id="numeric-field"
       />
-      <div className="grid grid-cols-3 gap-2 mt-2">
+      <div className="grid grid-cols-3 gap-2 mt-2 bg-zinc-300 rounded-md ">
         {['1', '2', '3', '4', '5', '6', '7', '8', '9', 'Back', '0', 'Enter'].map((button) => (
           <button
             key={button}
-            className="text-white font-bold p-2 text-center"
+            className="text-black font-bold p-2 text-center hover:bg-gray-700"
             onMouseDown={(e) => e.preventDefault()} // Prevent input blur
             onClick={() => handleKeypadClick(button)}
           >
@@ -136,6 +143,12 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
           </button>
         ))}
       </div>
+      <button 
+        className="mt-4 px-4 py-2 bg-red-500 text-white font-bold rounded"
+        onClick={handleGoBack}
+      >
+        Go Back
+      </button>
     </motion.div>
   );
 }
