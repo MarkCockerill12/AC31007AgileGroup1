@@ -1,18 +1,28 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"net"
 	"os"
+
+	creditcard "github.com/durango/go-credit-card"
 )
 
-// handleConnection handles incoming connections.
+type Request struct {
+	TnxID      string  `json:"TnxID"`
+	TnxTime    string  `json:"TnxTime"`
+	TnxKind    int     `json:"TnxKind"`
+	TnxAmount  float64 `json:"TnxAmount"`
+	CardNumber int     `json:"CardNumber"`
+	PIN        int     `json:"PIN"`
+}
+
 func handleConnection(conn net.Conn) {
 	defer conn.Close() // Ensure the connection is closed when the function exits
 
 	fmt.Printf("New connection established: %s\n", conn.RemoteAddr().String())
 
-	// Example: Echo back data received from the client
 	buffer := make([]byte, 1024)
 	for {
 		bytesRead, err := conn.Read(buffer)
@@ -20,14 +30,48 @@ func handleConnection(conn net.Conn) {
 			fmt.Printf("Connection closed by %s\n", conn.RemoteAddr().String())
 			return
 		}
-		fmt.Printf("Received: %s", string(buffer[:bytesRead]))
 
-		_, err = conn.Write(buffer[:bytesRead])
+		msg := string(buffer[:bytesRead])
+
+		fmt.Printf("Received: %s", msg)
+
+		card, err := parseCardInfo(msg)
+
+		issuer, err := getCardIssuer(card.CardNumber)
+
+		_, err = conn.Write([]byte(issuer.Short))
 		if err != nil {
 			fmt.Printf("Error writing to connection: %s\n", err)
 			return
 		}
 	}
+}
+
+func parseCardInfo(request string) (Request, error) {
+	var req Request
+	err := json.Unmarshal([]byte(request), &req)
+	if err != nil {
+		return req, err
+	}
+	return req, nil
+}
+
+func getCardIssuer(cardNumber int) (creditcard.Company, error) {
+	card := creditcard.Card{
+		Number:  fmt.Sprint(cardNumber),
+		Cvv:     "",
+		Month:   "",
+		Year:    "",
+		Company: creditcard.Company{},
+	}
+	err := card.Method()
+
+	if err != nil {
+		return creditcard.Company{}, err
+	}
+
+	return card.Company, nil
+
 }
 
 func main() {
