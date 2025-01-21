@@ -1,3 +1,7 @@
+/*
+Tailwind CSS file with overrides for certain elements of CSS
+*/
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
