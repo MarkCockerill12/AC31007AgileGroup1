@@ -1,1 +1,0 @@
-CREATE SCHEMA `atm_database` ;
