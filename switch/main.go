@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bufio"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -18,6 +19,17 @@ type Request struct {
 	PIN        int     `json:"PIN"`
 }
 
+type Response struct {
+	TnxID        string `json:"TnxID"`
+	ResponseType int    `json:"RespType"`
+	Message      string `json:"msg"`
+}
+
+var networksAddresses = map[string]string{
+	"visa":       "localhost:8000",
+	"mastercard": "localhost:8001",
+}
+
 func handleConnection(conn net.Conn) {
 	defer conn.Close() // Ensure the connection is closed when the function exits
 
@@ -31,15 +43,16 @@ func handleConnection(conn net.Conn) {
 			return
 		}
 
-		msg := string(buffer[:bytesRead])
+		request := buffer[:bytesRead]
+		response, err := forwardRequest(request)
 
-		fmt.Printf("Received: %s", msg)
+		if err != nil {
+			fmt.Printf("Error processing request: %s\n", err)
+			conn.Write([]byte(fmt.Sprintf("Error: %s", err)))
+			continue
+		}
 
-		card, err := parseCardInfo(msg)
-
-		issuer, err := getCardIssuer(card.CardNumber)
-
-		_, err = conn.Write([]byte(issuer.Short))
+		_, err = conn.Write(response)
 		if err != nil {
 			fmt.Printf("Error writing to connection: %s\n", err)
 			return
@@ -47,13 +60,16 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
-func parseCardInfo(request string) (Request, error) {
+func parseCardInfo(request []byte) (Request, error) {
 	var req Request
-	err := json.Unmarshal([]byte(request), &req)
-	if err != nil {
-		return req, err
-	}
-	return req, nil
+	err := json.Unmarshal(request, &req)
+	return req, err
+}
+
+func parseResponse(response []byte) (Response, error) {
+	var res Response
+	err := json.Unmarshal(response, &res)
+	return res, err
 }
 
 func getCardIssuer(cardNumber int) (creditcard.Company, error) {
@@ -72,6 +88,54 @@ func getCardIssuer(cardNumber int) (creditcard.Company, error) {
 
 	return card.Company, nil
 
+}
+
+func forwardRequest(request []byte) ([]byte, error) {
+	req, err := parseCardInfo(request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to parse request: %w", err)
+	}
+
+	company, err := getCardIssuer(req.CardNumber)
+	if err != nil {
+		return nil, fmt.Errorf("failed to get card issuer: %w", err)
+	}
+
+	companyAddress, exists := networksAddresses[company.Short]
+	if !exists {
+		return nil, fmt.Errorf("unknown card issuer: %s", company.Short)
+	}
+
+	response, err := SendTCPMessage(companyAddress, request)
+	if err != nil {
+		return nil, fmt.Errorf("failed to forward request: %w", err)
+	}
+
+	return []byte(response), nil
+}
+
+func SendTCPMessage(serverAddr string, message []byte) (string, error) {
+	// Establish a TCP connection
+	conn, err := net.Dial("tcp", serverAddr)
+	if err != nil {
+		return "", fmt.Errorf("failed to connect to server: %w", err)
+	}
+	defer conn.Close()
+
+	// Send the message over the connection
+	_, err = conn.Write(message)
+	if err != nil {
+		return "", fmt.Errorf("failed to send message: %w", err)
+	}
+
+	// Wait for a response from the server
+	reader := bufio.NewReader(conn)
+	response, err := reader.ReadString('\n') // Assumes newline-terminated responses
+	if err != nil {
+		return "", fmt.Errorf("failed to read response: %w", err)
+	}
+
+	return response, nil
 }
 
 func main() {
