@@ -1,12 +1,14 @@
-// filepath: /c:/Users/markc/Desktop/New folder/Coding/Electron/Agile/tailwind.config.js
+// Defines the tailwind CSS config file
+// Specifies paths for where tailwind should look for classes to generate its styles
 module.exports = {
   content: [
     './app/**/*.{js,ts,jsx,tsx}',
     './pages/**/*.{js,ts,jsx,tsx}',
     './components/**/*.{js,ts,jsx,tsx}',
   ],
+  // Specifies potential customisation options
   theme: {
     extend: {},
   },
-  plugins: [],
+  plugins: [], // Plugins are handled in postcss.config.js
 }

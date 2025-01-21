@@ -1,17 +1,31 @@
+// This file serves as the actual "page" of the electron ATM app, encompassing all the UI elements and functionality
+// Electron runs in Node.js, so we have access to various native APIs.
+// Electron also allows multiple instances of the app to run simultaneously which suffices the need of the ATM to be able to support multiple users at once.
+// 
+
 'use client'
 
+// Import the global CSS styles that incorporate tailwind styles
 import './globals.css';
 import Link from 'next/link'
+// Import react, usestate, motion for managing functional components and animations
 import React, { useState } from 'react'
 import { motion } from 'framer-motion'
+// Import various icons from lucide-react for the UI
 import { Code, Palette, Gamepad, Lightbulb } from 'lucide-react'
 
+// Defines the main functional component of the app
 export default function App() {
+  // Define variable for whether numeric input field should be shown
   const [showNumericField, setShowNumericField] = useState(false);
+  // Define variable for whether summary should be shown
   const [showSummary, setShowSummary] = useState(false);
+  // Define variables for account number and pin number
   const [accountNumber, setAccountNumber] = useState("");
   const [pinNumber, setPinNumber] = useState("");
 
+  // Return the main div of the app, with a flex column layout, centered items, and a minimum height of 100vh
+  //If showSummary is true, show the Summary component, else if showNumericField is true, show the NumericInput component, else show the Home component
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
       {showSummary ? (
@@ -29,8 +43,10 @@ export default function App() {
   );
 }
 
+// Define the function for the main home component
 function Home({ onButtonClick }) {
   return (
+    // Display the main text, subtext, and button of the home component all with smooth animations
     <div className="text-center">
       <motion.h1 
         className="mainText text-center text-4xl md:text-6xl font-bold mb-4 font-press-start-2p"
@@ -71,12 +87,16 @@ function Home({ onButtonClick }) {
   );
 }
 
+// Define the function for the numeric input component
 function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
+  // Set variables
   const [accountNumber, setLocalAccountNumber] = useState("");
   const [pinNumber, setLocalPinNumber] = useState("");
   const [isEnteringPin, setIsEnteringPin] = useState(false);
 
+  // Define the handler function for clicking keypad buttons
   const handleKeypadClick = (value) => {
+    // If the back button is pressed, remove the last character from the input field
     if (value === 'Back') {
       if (isEnteringPin) {
         if (pinNumber.length > 0) {
@@ -89,15 +109,17 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
           setLocalAccountNumber(accountNumber.slice(0, -1));
         }
       }
+    // If the enter button is pressed, check if the user is entering the pin or account number
     } else if (value === 'Enter') {
       if (!isEnteringPin) {
         setIsEnteringPin(true);
       } else {
-        // Handle PIN submission logic here
+        // Handle bank detail submission logic here
         setAccountNumber(accountNumber);
         setPinNumber(pinNumber);
         setShowSummary(true);
       }
+    // If any other button is pressed, add the value to the to the local pin/account number depending on state
     } else {
       if (isEnteringPin) {
         setLocalPinNumber((prev) => prev + value);
@@ -107,6 +129,7 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
     }
   };
 
+  //Return the main div of the numeric input component (our keypad) with various stylings and animations
   return (
     <motion.div 
       className="flex flex-col items-center"
@@ -139,7 +162,7 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }) {
     </motion.div>
   );
 }
-
+// Define the function that displays the "summary" of the account number and pin number for testing
 function Summary({ accountNumber, pinNumber }) {
   return (
     <motion.div 
