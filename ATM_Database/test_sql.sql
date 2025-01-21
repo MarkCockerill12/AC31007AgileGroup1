@@ -11,6 +11,6 @@ call PAN_find_PIN('456789012345678');
 
 
 select surname, forename 
-from cardholderdetails
+from userAccount
 where HolderID = (select HolderID from cardDetails where PAN = 456789012345678 )
 ;
