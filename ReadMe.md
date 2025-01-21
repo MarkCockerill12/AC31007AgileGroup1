@@ -1,4 +1,4 @@
-![image](https://github.com/user-attachments/assets/3197f7b0-2ad7-4d9e-a639-d829f9edfa56)# AC31007 - Agile Software Development Group 1
+# AC31007 - Agile Software Development Group 1
 ## Sprint One: Jan 20th - Jan 26th
 ## Sprint Two: Jan 27th - Fri 31st
 
