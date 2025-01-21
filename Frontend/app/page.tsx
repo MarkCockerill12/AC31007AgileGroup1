@@ -84,7 +84,7 @@ function Home({ onButtonClick }) {
         transition={{ duration: 0.5, delay: 0.6 }}
         onClick={onButtonClick}
       >
-        Enter PIN you pompous tard
+        Enter PIN
       </motion.button>
     </div>
   )
@@ -141,11 +141,12 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }: Numeri
     }
   }
 
+  // Back button
   const handleGoBack = () => {
     window.location.reload()
   }
 
-  //Return the main div of the numeric input component (our keypad) with various stylings and animations
+  //Return the main div of the numeric input component (our keypad) with various stylings and animations + Back Button
   return (
     <motion.div
       className="flex flex-col items-center"
@@ -193,6 +194,7 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
   const [action, setAction] = useState(null)
   const [transactionAmount, setTransactionAmount] = useState(0)
 
+  // If the user is trying to withdraw money, show the relevant withdraw info
   if (action === "withdraw") {
     return (
       <Withdraw
@@ -204,6 +206,7 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
         setTransactionAmount={setTransactionAmount}
       />
     )
+    // If the user is trying to look at their deposit, show the relevant deposit info
   } else if (action === "deposit") {
     return (
       <Deposit
@@ -217,10 +220,11 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
     )
   }
 
+  // Back button
   const handleGoBack = () => {
     window.location.reload()
   }
-
+  // Display to the user their account summary alongside the withdraw/deposit buttons, and the sign out button
   return (
     <motion.div
       className="text-center"
@@ -251,9 +255,12 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
   )
 }
 
+// Define the function that handles the withdraw functionality
 function Withdraw({ accountNumber, pinNumber, balance, setBalance, setShowSummary, setTransactionAmount }) {
+  // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
-
+  // Declare a function to handle withdrawing money
+  // Check to make sure amount is valid, then update the balance and show the summary
   const handleWithdraw = (amount) => {
     if (amount <= balance && amount > 0) {
       setTransactionAmount(amount)
@@ -264,10 +271,11 @@ function Withdraw({ accountNumber, pinNumber, balance, setBalance, setShowSummar
     }
   }
 
+  // Back Button functionality
   const handleGoBack = () => {
     setShowSummary(true)
   }
-
+ // Display the withdraw component with the account number, pin number, balance, and withdraw buttons
   return (
     <motion.div
       className="text-center"
@@ -316,9 +324,12 @@ function Withdraw({ accountNumber, pinNumber, balance, setBalance, setShowSummar
   )
 }
 
+// Define the function that handles the deposit functionality
 function Deposit({ accountNumber, pinNumber, balance, setBalance, setShowSummary, setTransactionAmount }) {
+  // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
-
+  // Declare a function to handle depositing money
+  // Check to make sure amount is valid, then update the balance and show the summary
   const handleDeposit = (amount) => {
     if (amount > 0) {
       setTransactionAmount(amount)
@@ -328,11 +339,12 @@ function Deposit({ accountNumber, pinNumber, balance, setBalance, setShowSummary
       alert("Invalid amount")
     }
   }
-
+  // Back Button functionality
   const handleGoBack = () => {
     setShowSummary(true)
   }
 
+  // Display the deposit component with the account number, pin number, balance, and withdraw buttons
   return (
     <motion.div
       className="text-center"
