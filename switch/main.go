@@ -36,15 +36,69 @@ func handleConnection(conn net.Conn) {
 		fmt.Printf("Received: %s", msg)
 
 		card, err := parseCardInfo(msg)
+		if err != nil {
+			fmt.Printf("Error parsing card info: %s\n", err)
+			return
+		}
 
 		issuer, err := getCardIssuer(card.CardNumber)
+		if err != nil {
+			fmt.Printf("Error getting card issuer: %s\n", err)
+			return
+		}
 
 		_, err = conn.Write([]byte(issuer.Short))
 		if err != nil {
 			fmt.Printf("Error writing to connection: %s\n", err)
 			return
 		}
+
+		//onwards to the network simulation
+		err = forwardRequestToNetworkSimulator(card)
+		if err != nil {
+			fmt.Printf("Error forwarding request to network simulator: %s\n", err)
+			return
+		}
+
 	}
+}
+
+func forwardRequestToNetworkSimulator(request Request) error {
+	var cardDetails string
+	simConn, err := net.Dial("tcp", "localhost:8001")
+	if err != nil {
+		return err
+	}
+	defer simConn.Close()
+
+	cardDetails, err = parseBackCardInfo(request)
+	if err != nil {
+		return err
+	}
+	_, err = simConn.Write([]byte(cardDetails))
+	if err != nil {
+		return err
+	}
+
+	// Read the response from the network simulator
+	simBuffer := make([]byte, 1024)
+	simBytesRead, err := simConn.Read(simBuffer)
+	if err != nil {
+		return err
+	}
+	simResponse := string(simBuffer[:simBytesRead])
+	fmt.Printf("Received from network simulator: %s\n", simResponse)
+	return nil
+}
+
+func parseBackCardInfo(request Request) (string, error) {
+	var cardDetails string
+	cardDetailsBytes, err := json.Marshal(request)
+	if err != nil {
+		return cardDetails, err
+	}
+	cardDetails = string(cardDetailsBytes)
+	return cardDetails, nil
 }
 
 func parseCardInfo(request string) (Request, error) {
