@@ -54,7 +54,7 @@ func handleConnection(conn net.Conn) {
 		}
 
 		//onwards to the network simulation
-		err = forwardRequestToNetworkSimulator(card)
+		err = forwardRequestToNetworkSimulator(msg, issuer)
 		if err != nil {
 			fmt.Printf("Error forwarding request to network simulator: %s\n", err)
 			return
@@ -63,19 +63,26 @@ func handleConnection(conn net.Conn) {
 	}
 }
 
-func forwardRequestToNetworkSimulator(request Request) error {
-	var cardDetails string
-	simConn, err := net.Dial("tcp", "localhost:8001")
+func forwardRequestToNetworkSimulator(request string, issuer creditcard.Company) error {
+	var ip string
+	switch issuer.Short {
+	case "VISA":
+		ip = "8001"
+	case "MasterCard":
+		ip = "8002"
+	case "American Express":
+		ip = "8003"
+	default:
+		return fmt.Errorf("invalid card issuer")
+	}
+
+	simConn, err := net.Dial("tcp", net.JoinHostPort("localhost", ip)) //Change which port to connect to dependin on the card provider.
 	if err != nil {
 		return err
 	}
 	defer simConn.Close()
 
-	cardDetails, err = parseBackCardInfo(request)
-	if err != nil {
-		return err
-	}
-	_, err = simConn.Write([]byte(cardDetails))
+	_, err = simConn.Write([]byte(request))
 	if err != nil {
 		return err
 	}
@@ -89,16 +96,6 @@ func forwardRequestToNetworkSimulator(request Request) error {
 	simResponse := string(simBuffer[:simBytesRead])
 	fmt.Printf("Received from network simulator: %s\n", simResponse)
 	return nil
-}
-
-func parseBackCardInfo(request Request) (string, error) {
-	var cardDetails string
-	cardDetailsBytes, err := json.Marshal(request)
-	if err != nil {
-		return cardDetails, err
-	}
-	cardDetails = string(cardDetailsBytes)
-	return cardDetails, nil
 }
 
 func parseCardInfo(request string) (Request, error) {
