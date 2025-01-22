@@ -25,26 +25,27 @@ export default function App() {
 
 
   
-  const handleSendTransaction = async () => {
-    const transactionData = { accountNumber, pinNumber };
+   const handleSendTransaction = async () => {
+     const transactionData = { accountNumber, pinNumber };
     try {
-      const res = await window.electron.sendTransaction(transactionData);
-      setResponse(res);
-    } catch (err) {
-      console.error('Error', err);
-    }
-  };
+       const res = await window.electron.sendTransaction(transactionData);
+       setResponse(res);
+     } catch (err) {
+       console.error('Error', err);
+     }
+   };
 
 
-  return (
+   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
       {showSummary ? (
-        <Summary accountNumber={accountNumber} pinNumber={pinNumber} />
+        <Summary accountNumber={accountNumber} pinNumber={pinNumber} response={response} />
       ) : showNumericField ? (
         <NumericInput 
           setShowSummary={setShowSummary}
           setAccountNumber={setAccountNumber}
           setPinNumber={setPinNumber}
+          handleSendTransaction={handleSendTransaction}
         />
       ) : (
         <Home onButtonClick={() => setShowNumericField(true)} />
@@ -98,7 +99,7 @@ function Home({ onButtonClick }) {
 
 
 
-function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, }) {
+function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, handleSendTransaction }) {
   const [accountNumber, setLocalAccountNumber] = useState("");
   const [pinNumber, setLocalPinNumber] = useState("");
   const [isEnteringPin, setIsEnteringPin] = useState(false);
@@ -123,7 +124,7 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, }) {
         // Handle PIN submission logic here
         setAccountNumber(accountNumber);
         setPinNumber(pinNumber);
-        setShowSummary(true);
+        handleSendTransaction();
       }
     } else {
       if (isEnteringPin) {
@@ -180,7 +181,7 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, }) {
   );
 }
 
-function Summary({ accountNumber, pinNumber }) {
+function Summary({ accountNumber, pinNumber, response }) {
   return (
     <motion.div 
       className="text-center"
@@ -191,6 +192,7 @@ function Summary({ accountNumber, pinNumber }) {
       <h2 className="text-2xl mb-4">Summary</h2>
       <p className="mb-2">Account Number: {accountNumber}</p>
       <p>PIN Number: {pinNumber}</p>
+      <p>Response: {response}</p>
     </motion.div>
   );
 }
