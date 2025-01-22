@@ -9,23 +9,6 @@ VALUES (123456789123456, 1234, 567, '2025-12-31', 1, 'Bank of Example', 'VISA');
 
 INSERT INTO ATM_Details (Address, Postcode, ModelNumber)
 VALUES ('456 Elm St', 'CD34EF', 'ATM-Model-XYZ');
-*/ 
-
-
--- Insert records into cardHolderDetails
-INSERT INTO cardHolderDetails (Surname, Forename, Address, PhoneNumber, Gender, Postcode)
-VALUES 
-('Doe', 'John', '123 Main St', '555-123-4567', 'Male', 'AB12CD'),
-('Smith', 'Alice', '789 Oak Rd', '555-987-6543', 'Female', 'EF56GH'),
-('Johnson', 'Chris', '101 Pine Ave', '555-111-2222', 'Male', 'GH78IJ'),
-('Brown', 'Emily', '202 Birch Blvd', '555-222-3333', 'Female', 'IJ90KL'),
-('Davis', 'Michael', '303 Cedar Ln', '555-333-4444', 'Male', 'KL12MN'),
-('Miller', 'Sarah', '404 Maple Dr', '555-444-5555', 'Female', 'MN23OP'),
-('Wilson', 'David', '505 Walnut Ct', '555-555-6666', 'Male', 'OP34QR'),
-('Moore', 'Laura', '606 Redwood St', '555-666-7777', 'Female', 'QR45ST'),
-('Taylor', 'James', '707 Willow Dr', '555-777-8888', 'Male', 'ST56UV'),
-('Anderson', 'Sophia', '808 Ash Ln', '555-888-9999', 'Female', 'UV67WX'),
-('Thomas', 'Daniel', '909 Elm Blvd', '555-999-0000', 'Male', 'WX78YZ');
 
 -- Insert records into accountDetails
 INSERT INTO accountDetails (AccountAmount, HolderID)
@@ -40,6 +23,25 @@ VALUES
 (2800.00, 8),
 (4500.30, 9),
 (3000.15, 10);
+*/ 
+
+
+-- Insert records into cardHolderDetails
+INSERT INTO userAccount (Surname, Forename, Address, PhoneNumber, Gender, Postcode, Balance)
+VALUES 
+('Doe', 'John', '123 Main St', '555-123-4567', 'Male', 'AB12CD', 1000.50),
+('Smith', 'Alice', '789 Oak Rd', '555-987-6543', 'Female', 'EF56GH', 2000.75),
+('Johnson', 'Chris', '101 Pine Ave', '555-111-2222', 'Male', 'GH78IJ', 3500.40),
+('Brown', 'Emily', '202 Birch Blvd', '555-222-3333', 'Female', 'IJ90KL', 1500.20),
+('Davis', 'Michael', '303 Cedar Ln', '555-333-4444', 'Male', 'KL12MN', 5000.00),
+('Miller', 'Sarah', '404 Maple Dr', '555-444-5555', 'Female', 'MN23OP', 1200.90),
+('Wilson', 'David', '505 Walnut Ct', '555-555-6666', 'Male', 'OP34QR', 2800.00),
+('Moore', 'Laura', '606 Redwood St', '555-666-7777', 'Female', 'QR45ST', 4500.30),
+('Taylor', 'James', '707 Willow Dr', '555-777-8888', 'Male', 'ST56UV', 230.15),
+('Anderson', 'Sophia', '808 Ash Ln', '555-888-9999', 'Female', 'UV67WX', 9100.15),
+('Thomas', 'Daniel', '909 Elm Blvd', '555-999-0000', 'Male', 'WX78YZ', 3290.15);
+
+
 
 -- Insert records into cardDetails
 INSERT INTO cardDetails (PAN, PIN, CVV, Expires, HolderID, Bank, Network)
