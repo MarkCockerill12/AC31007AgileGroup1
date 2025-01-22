@@ -1,5 +1,7 @@
- const { contextBridge, ipcRenderer } = require('electron');
+const { contextBridge, ipcRenderer } = require('electron');
 
- contextBridge.exposeInMainWorld('electron', {
-   sendTransaction: (transactionData) => ipcRenderer.invoke('send-transaction', transactionData),
- });
+contextBridge.exposeInMainWorld('electron', {
+    sendTransaction: async (transactionData) => {
+        return ipcRenderer.invoke('send-transaction', transactionData);
+    },
+});

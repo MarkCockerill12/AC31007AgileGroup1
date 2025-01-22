@@ -28,6 +28,7 @@ export default function App() {
    const handleSendTransaction = async () => {
      const transactionData = { accountNumber, pinNumber };
     try {
+      console.log(transactionData);
        const res = await window.electron.sendTransaction(transactionData);
        setResponse(res);
      } catch (err) {
