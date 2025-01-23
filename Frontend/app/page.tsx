@@ -9,7 +9,7 @@
 declare global {
   interface Window {
     electron: {
-      sendTransaction: (transactionData: { accountNumber: string; pinNumber: string }) => Promise<string>;
+      sendTransaction: (transactionData: {atmID: string; TnxTime: string; TnxKind: number; TnxAmount: number;  CardNumber: number; PIN: number }) => Promise<string>;
     };
   }
 }
@@ -30,21 +30,45 @@ export default function App() {
   // Define variable for whether summary should be shown
   const [showSummary, setShowSummary] = useState(false)
    // Define variables for account number and pin number
-  const [accountNumber, setAccountNumber] = useState("")
-  const [pinNumber, setPinNumber] = useState("")
+  const [CardNumber, setCardNumber] = useState("")
+  const [PIN, setPIN] = useState("")
   const [balance, setBalance] = useState(1000) // Initial balance
   const [response, setResponse] = useState("");
   // function to handle send transaction and what transaction data is
   
   
   const handleSendTransaction = async () => {
-    const transactionData = { accountNumber, pinNumber, balance };
-  try {
-    console.log(transactionData);
+    const atmID = "ATM123";
+    const TnxTime = new Date().toISOString();
+    const TnxKind = 1;
+    const TnxAmount = 100;
+  
+    // Convert strings to integers
+    const cardNumberInt = parseInt(CardNumber, 10);
+    const pinInt = parseInt(PIN, 10);
+  
+    // Validate numbers
+    if (isNaN(cardNumberInt) || isNaN(pinInt)) {
+      setResponse('Invalid card number or PIN');
+      return;
+    }
+  
+    const transactionData = {
+      atmID,
+      TnxTime,
+      TnxKind,
+      TnxAmount,
+      CardNumber: cardNumberInt,
+      PIN: pinInt
+    };
+  
+    try {
+      console.log(transactionData);
       const res = await window.electron.sendTransaction(transactionData);
       setResponse(res);
     } catch (err) {
-    console.error('Error', err);
+      console.error('Error', err);
+      setResponse('Transaction failed');
     }
   };
 
@@ -55,8 +79,8 @@ export default function App() {
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
       {showSummary ? (
         <Summary
-          accountNumber={accountNumber}
-          pinNumber={pinNumber}
+          CardNumber={CardNumber}
+          PIN={PIN}
           balance={balance}
           setBalance={setBalance}
           setShowSummary={setShowSummary}
@@ -64,7 +88,7 @@ export default function App() {
           
         />
       ) : showNumericField ? (
-        <NumericInput setShowSummary={setShowSummary} setAccountNumber={setAccountNumber} setPinNumber={setPinNumber} handleSendTransaction={handleSendTransaction} />
+        <NumericInput setShowSummary={setShowSummary} setCardNumber={setCardNumber} setPIN={setPIN} handleSendTransaction={handleSendTransaction} />
       ) : (
         <Home onButtonClick={() => setShowNumericField(true)} />
       )}
@@ -121,30 +145,30 @@ function Home({ onButtonClick }) {
 
 interface NumericInputProps {
   setShowSummary: (show: boolean) => void
-  setAccountNumber: (accountNumber: string) => void
-  setPinNumber: (pinNumber: string) => void
+  setCardNumber: (CardNumber: string) => void
+  setPIN: (PIN: string) => void
   handleSendTransaction: () => Promise<void>
 }
 
 // Define the function for the numeric input component
-function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, handleSendTransaction }: NumericInputProps) {
+function NumericInput({ setShowSummary, setCardNumber, setPIN, handleSendTransaction }: NumericInputProps) {
   // Set variables
-  const [accountNumber, setLocalAccountNumber] = useState("")
-  const [pinNumber, setLocalPinNumber] = useState("")
+  const [CardNumber, setLocalCardNumber] = useState("")
+  const [PIN, setLocalPIN] = useState("")
   const [isEnteringPin, setIsEnteringPin] = useState(false)
   // Define the handler function for clicking keypad buttons
   const handleKeypadClick = (value: string) => {
     // If the back button is pressed, remove the last character from the input field
     if (value === "Back") {
       if (isEnteringPin) {
-        if (pinNumber.length > 0) {
-          setLocalPinNumber(pinNumber.slice(0, -1))
+        if (PIN.length > 0) {
+          setLocalPIN(PIN.slice(0, -1))
         } else {
           setIsEnteringPin(false)
         }
       } else {
-        if (accountNumber.length > 0) {
-          setLocalAccountNumber(accountNumber.slice(0, -1))
+        if (CardNumber.length > 0) {
+          setLocalCardNumber(CardNumber.slice(0, -1))
         }
       }
     // If the enter button is pressed, check if the user is entering the pin or account number
@@ -153,21 +177,21 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, handleSe
         setIsEnteringPin(true)
       } else {
         // Handle bank detail submission logic here
-        setAccountNumber(accountNumber)
-        setPinNumber(pinNumber)
+        setCardNumber(CardNumber)
+        setPIN(PIN)
         setShowSummary(true)
         // Handle bank detail submission logic here
-        setAccountNumber(accountNumber);
-        setPinNumber(pinNumber);
+        setCardNumber(CardNumber);
+        setPIN(PIN);
         handleSendTransaction();
         setShowSummary(true);
       }
     // If any other button is pressed, add the value to the to the local pin/account number depending on state
     } else {
       if (isEnteringPin) {
-        setLocalPinNumber((prev) => prev + value)
+        setLocalPIN((prev) => prev + value)
       } else {
-        setLocalAccountNumber((prev) => prev + value)
+        setLocalCardNumber((prev) => prev + value)
       }
     }
   }
@@ -191,7 +215,7 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, handleSe
         </label>
         <input
           type="text"
-          value={isEnteringPin ? pinNumber : accountNumber}
+          value={isEnteringPin ? PIN : CardNumber}
           readOnly
           className="border p-2 mb-4 border-gray-300 text-black"
           id="numeric-field"
@@ -237,15 +261,15 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, handleSe
   
 // Define the function that displays the "summary" of the account number and pin number for testing
 interface SummaryProps {
-  accountNumber: string;
-  pinNumber: string;
+  CardNumber: string;
+  PIN: string;
   balance: number;
   setBalance: React.Dispatch<React.SetStateAction<number>>;
   setShowSummary: React.Dispatch<React.SetStateAction<boolean>>;
   response: string;
 }
 
-function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary, response }: SummaryProps) {
+function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, response }: SummaryProps) {
   const [action, setAction] = useState(null)
   const [transactionAmount, setTransactionAmount] = useState(0)
 
@@ -253,8 +277,8 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
   if (action === "withdraw") {
     return (
       <Withdraw
-        accountNumber={accountNumber}
-        pinNumber={pinNumber}
+        CardNumber={CardNumber}
+        PIN={PIN}
         balance={balance}
         setBalance={setBalance}
         setShowSummary={() => setAction(null)}
@@ -265,8 +289,8 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
   } else if (action === "deposit") {
     return (
       <Deposit
-        accountNumber={accountNumber}
-        pinNumber={pinNumber}
+        CardNumber={CardNumber}
+        PIN={PIN}
         balance={balance}
         setBalance={setBalance}
         setShowSummary={() => setAction(null)}
@@ -289,7 +313,7 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-white text-2xl mb-4">Account Summary</h2>
-        <p className="text-white mb-2">Account Number: {accountNumber}</p>
+        <p className="text-white mb-2">Account Number: {CardNumber}</p>
         <p className="text-white mb-2">Balance: £{balance}</p>
         <p className="text-white mb-2">Last Transaction: £{transactionAmount}</p>
 
@@ -325,7 +349,7 @@ function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary
 }
 
 // Define the function that handles the withdraw functionality
-function Withdraw({ accountNumber, pinNumber, balance, setBalance, setShowSummary, setTransactionAmount }) {
+function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTransactionAmount }) {
   // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
   // Declare a function to handle withdrawing money
@@ -354,7 +378,7 @@ function Withdraw({ accountNumber, pinNumber, balance, setBalance, setShowSummar
         transition={{ duration: 0.5 }}
       >
         <h2 className=" text-white text-2xl mb-4">Withdraw</h2>
-        <p className="text-white mb-2">Account Number: {accountNumber}</p>
+        <p className="text-white mb-2">Account Number: {CardNumber}</p>
         <p className="text-white mb-2">Balance: £{balance}</p>
 
         <h2 className=" text-white text-2xl mb-4">Withdraw how much?</h2>
@@ -410,7 +434,7 @@ function Withdraw({ accountNumber, pinNumber, balance, setBalance, setShowSummar
 }
 
 // Define the function that handles the deposit functionality
-function Deposit({ accountNumber, pinNumber, balance, setBalance, setShowSummary, setTransactionAmount }) {
+function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTransactionAmount }) {
   // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
   // Declare a function to handle depositing money
@@ -439,8 +463,8 @@ function Deposit({ accountNumber, pinNumber, balance, setBalance, setShowSummary
       transition={{ duration: 0.5 }}
     >
       <h2 className=" text-white text-2xl mb-4">Deposit</h2>
-      <p className="text-white mb-2">Account Number: {accountNumber}</p>
-      <p className="text-white mb-2"> PIN Number: {pinNumber}</p>
+      <p className="text-white mb-2">Account Number: {CardNumber}</p>
+      <p className="text-white mb-2"> PIN Number: {PIN}</p>
       <p className="text-white mb-2">Balance: £{balance}</p>
 
       <h2 className=" text-white text-2xl mb-4">Deposit how much?</h2>
