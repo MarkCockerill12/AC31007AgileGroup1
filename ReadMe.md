@@ -46,10 +46,10 @@ Similarly we must display a solid understanding of both agile methods and demons
 
 **Our Github Repo must contain:**
 - [ ] All source code for our project and the .exe for our Electron app
-- [ ] Project Documents including:
-    - [ ] Product Backlog (Github Project Board)
-    - [ ] Sprint Backlog (Github Project Board)
-- [ ] A link to a video of one of our scrum meetings
+- [x] Project Documents including:
+    - [x] Product Backlog (Github Project Board)
+    - [x] Sprint Backlog (Github Project Board)
+- [x] A link to a video of one of our scrum meetings
 
 ### Agile
 **Our Team Membership**
@@ -60,3 +60,7 @@ Similarly we must display a solid understanding of both agile methods and demons
 - Flynn Henderson (2502464)
 - Lili Tsang (2506759)
 - Cameron Humber (2411617)
+
+**Video of One of Our Scrum Meetings**
+
+This video was recorded on [23/01/2025](https://drive.google.com/file/d/1wmhitzrGsAiwNDs7exZQRpi9HMEEoVA5/view?usp=sharing)
