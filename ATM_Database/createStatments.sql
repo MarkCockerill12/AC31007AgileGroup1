@@ -7,7 +7,7 @@ CREATE TABLE userAccount (
     PhoneNumber VARCHAR(15),
     Gender VARCHAR(20),
     Postcode VARCHAR(7),
-    Balance FLOAT
+    Balance DOUBLE
 );
 
 -- Create the cardDetails table
@@ -29,3 +29,8 @@ CREATE TABLE ATM_Details (
     Postcode VARCHAR(7),
     ModelNumber VARCHAR(45)
 );
+
+CREATE INDEX idx_CardDetails_PAN ON cardDetails (PAN);
+CREATE INDEX idx_CardDetails_HolderID  ON cardDetails (HolderID);
+CREATE INDEX idx_UserAccount_HolderID  ON userAccount (HolderID);
+
