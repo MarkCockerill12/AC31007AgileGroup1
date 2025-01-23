@@ -2,6 +2,7 @@
 
 const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
+const net = require('net');
 
 let mainWindow;
 
@@ -12,7 +13,8 @@ app.on('ready', () => {
     height: 600,
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
-      nodeIntegration: true,
+      nodeIntegration: false,
+      contextIsolation: true,
     },
   });
 
