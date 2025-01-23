@@ -38,8 +38,7 @@ VALUES
 ('Wilson', 'David', '505 Walnut Ct', '555-555-6666', 'Male', 'OP34QR', 2800.00),
 ('Moore', 'Laura', '606 Redwood St', '555-666-7777', 'Female', 'QR45ST', 4500.30),
 ('Taylor', 'James', '707 Willow Dr', '555-777-8888', 'Male', 'ST56UV', 230.15),
-('Anderson', 'Sophia', '808 Ash Ln', '555-888-9999', 'Female', 'UV67WX', 9100.15),
-('Thomas', 'Daniel', '909 Elm Blvd', '555-999-0000', 'Male', 'WX78YZ', 3290.15);
+('Anderson', 'Sophia', '808 Ash Ln', '555-888-9999', 'Female', 'UV67WX', 9100.15);
 
 
 
