@@ -5,6 +5,15 @@
 
 "use client"
 
+
+declare global {
+  interface Window {
+    electron: {
+      sendTransaction: (transactionData: { accountNumber: string; pinNumber: string }) => Promise<string>;
+    };
+  }
+}
+
 // Import the global CSS styles that incorporate tailwind styles
 import "./globals.css"
 import Link from "next/link"
@@ -24,6 +33,19 @@ export default function App() {
   const [accountNumber, setAccountNumber] = useState("")
   const [pinNumber, setPinNumber] = useState("")
   const [balance, setBalance] = useState(1000) // Initial balance
+  const [response, setResponse] = useState("");
+  // function to handle send transaction and what transaction data is
+     const handleSendTransaction = async () => {
+     const transactionData = { accountNumber, pinNumber };
+    try {
+      console.log(transactionData);
+       const res = await window.electron.sendTransaction(transactionData);
+       setResponse(res);
+     } catch (err) {
+       console.error('Error', err);
+     }
+   };
+
 
   // Return the main div of the app, with a flex column layout, centered items, and a minimum height of 100vh
   //If showSummary is true, show the Summary component, else if showNumericField is true, show the NumericInput component, else show the Home component
@@ -36,9 +58,10 @@ export default function App() {
           balance={balance}
           setBalance={setBalance}
           setShowSummary={setShowSummary}
+          handleSendTransaction={handleSendTransaction}
         />
       ) : showNumericField ? (
-        <NumericInput setShowSummary={setShowSummary} setAccountNumber={setAccountNumber} setPinNumber={setPinNumber} />
+        <NumericInput setShowSummary={setShowSummary} setAccountNumber={setAccountNumber} setPinNumber={setPinNumber} response={response} />
       ) : (
         <Home onButtonClick={() => setShowNumericField(true)} />
       )}
@@ -132,6 +155,7 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }: Numeri
         // Handle bank detail submission logic here
         setAccountNumber(accountNumber);
         setPinNumber(pinNumber);
+        handleSendTransaction();
         setShowSummary(true);
       }
     // If any other button is pressed, add the value to the to the local pin/account number depending on state
