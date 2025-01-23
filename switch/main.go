@@ -26,8 +26,8 @@ type Response struct {
 }
 
 var networksAddresses = map[string]string{
-	"visa":       "localhost:8000",
-	"mastercard": "localhost:8001",
+	"visa":       "54.164.156.45:31007",
+	"mastercard": "54.164.156.45:31007",
 }
 
 func handleConnection(conn net.Conn) {
@@ -44,6 +44,7 @@ func handleConnection(conn net.Conn) {
 		}
 
 		request := buffer[:bytesRead]
+		fmt.Printf("Received request: %s\n", string(request)) // Added line
 		response, err := forwardRequest(request)
 
 		if err != nil {
