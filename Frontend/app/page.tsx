@@ -78,13 +78,13 @@ function Home({ onButtonClick }) {
           To Start Entering Your Transaction, Click Below
         </motion.p>
       </div>
-      <div className="flex justify-center mt-10 cursor-pointer">
+      <div className="flex justify-center  cursor-pointer">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, transitionDelay: 0.6 }}
           onClick={onButtonClick}
-          style={{ backgroundImage: 'url(/assets/enterCard.png)', backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '300px', height: '200px' }}
+          style={{ backgroundImage: 'url(/assets/enterCard.png)', backgroundSize: 'contain', backgroundPosition: 'center', backgroundRepeat: 'no-repeat', width: '200px', height: '150px' }}
           whileHover={{ backgroundImage: 'url(/assets/enterCardHover.png)' }}
         >
         </motion.div>
@@ -318,7 +318,6 @@ function Withdraw({ accountNumber, pinNumber, balance, setBalance, setShowSummar
       >
         <h2 className=" text-white text-2xl mb-4">Withdraw</h2>
         <p className="text-white mb-2">Account Number: {accountNumber}</p>
-        <p className="text-white mb-2"> PIN Number: {pinNumber}</p>
         <p className="text-white mb-2">Balance: £{balance}</p>
 
         <h2 className=" text-white text-2xl mb-4">Withdraw how much?</h2>
