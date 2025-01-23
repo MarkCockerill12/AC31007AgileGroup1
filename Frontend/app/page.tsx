@@ -29,8 +29,6 @@ import Link from "next/link"
 import type React from "react"
 import { useState, useEffect } from "react"
 import { motion } from "framer-motion"
-// Import various icons from lucide-react for the UI
-import { Code, Palette, Gamepad, Lightbulb } from "lucide-react"
 
 // Defines the main functional component of the app
 export default function App() {
@@ -42,7 +40,7 @@ export default function App() {
   const [CardNumber, setCardNumber] = useState("")
   const [PIN, setPIN] = useState("")
   const [balance, setBalance] = useState(1000) // Initial balance
-  const [response, setResponse] = useState("")
+  const [response, setResponse] = useState("");
 
   // Return the main div of the app, with a flex column layout, centered items, and a minimum height of 100vh
   //If showSummary is true, show the Summary component, else if showNumericField is true, show the NumericInput component, else show the Home component
@@ -79,7 +77,7 @@ function Home({ onButtonClick }) {
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
       <div className="text-center">
         <motion.h1
-          className="mainText text-4xl md:text-6xl font-bold mb-4"
+          className="mainText text-4xl md:text-6xl font-bold mb-4 hover:text-blue-500 hover:dark:text-blue-400"
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
@@ -104,12 +102,13 @@ function Home({ onButtonClick }) {
           To Start Entering Your Transaction, Click Below
         </motion.p>
       </div>
-      <div className="flex justify-center  cursor-pointer">
+      <div className="flex justify-center cursor-pointer">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, transitionDelay: 0.6 }}
           onClick={onButtonClick}
+
           style={{
             backgroundImage: "url(/assets/enterCard.png)",
             backgroundSize: "contain",
@@ -119,7 +118,9 @@ function Home({ onButtonClick }) {
             height: "150px",
           }}
           whileHover={{ backgroundImage: "url(/assets/enterCardHover.png)" }}
+          whileTap={{ backgroundImage: "url(/assets/enterCardOnClick.png)" }}
         ></motion.div>
+
       </div>
     </div>
   )
@@ -296,15 +297,26 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-white text-2xl mb-4">Account Summary</h2>
-        <p className="text-white mb-2">Account Number: {CardNumber}</p>
-        <p className="text-white mb-2">Balance: £{balance}</p>
+        
+        <h2 className="text-white text-2xl mb-4 font-extrabold">Account Summary</h2>
+        <div className="flex justify-between text-white mb-2">
+          <span className="font-bold">Account Number:</span>
+          <span>{CardNumber}</span>
+        </div>
+        <div className="flex justify-between text-white mb-2">
+          <span className="font-bold">Balance:</span>
+          <span>£{balance}</span>
+        </div>
+        <div className="flex justify-between text-white mb-2">
         {transactionAmount > 0 && (
-          <p className="text-white mb-2">
+          <span className="text-white mb-2">
             Last Transaction: {transactionKind === "withdraw" ? "-" : "+"}£{transactionAmount}
-          </p>
+          </span>
         )}
-        <p className="text-white mb-2">Response: {response}</p>
+        </div>
+        <div className="flex justify-between text-white mb-2">
+          <p className="text-white mb-2">Response: {response}</p>
+        </div>
 
         <button
           className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-150"
@@ -365,23 +377,31 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className=" text-white text-2xl mb-4">Withdraw</h2>
-        <p className="text-white mb-2">Account Number: {CardNumber}</p>
-        <p className="text-white mb-2">Balance: £{balance}</p>
+        <h2 className=" text-white text-2xl mb-4 font-extrabold">Withdrawal</h2>
+        <div className="flex justify-between text-white mb-2">
+          <span className="font-bold">Account Number:</span>
+          <span>{CardNumber}</span>
+        </div>
+        <div className="flex justify-between text-white mb-10">
+          <span className="font-bold">Balance:</span>
+          <span>£{balance}</span>
+        </div>
 
         <h2 className=" text-white text-2xl mb-4">Withdraw how much?</h2>
 
-        <div className="grid grid-cols-2 grid-rows-3 gap-4">
+        <div className="grid grid-cols-3 grid-rows-2 gap-4">
           {["1", "5", "10", "20", "50", "100"].map((amount) => (
             <button
               key={amount}
-              className="mt-4 m-2 px-4 py-2 bg-white text-black rounded"
+              className="mt-2 px-4 py-2 m-2 bg-white text-black rounded-full hover:scale-150"
               onClick={() => handleWithdraw(Number.parseInt(amount))}
             >
               £{amount}
             </button>
           ))}
-          <input
+        </div>
+        <div className="grid" >
+        <input
             type="number"
             value={customAmount}
             onChange={(e) => setCustomAmount(e.target.value)}
@@ -390,7 +410,7 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
             min="1"
           />
           <button
-            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded"
+            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-150"
             onClick={() => handleWithdraw(Number.parseInt(customAmount))}
           >
             Withdraw Custom Amount
@@ -437,24 +457,32 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
   // Display the deposit component with the account number, pin number, balance, and withdraw buttons
   return (
     <>
+
       <motion.div
         className="text-center"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className=" text-white text-2xl mb-4">Deposit</h2>
-        <p className="text-white mb-2">Account Number: {CardNumber}</p>
-        <p className="text-white mb-2"> PIN Number: {PIN}</p>
-        <p className="text-white mb-2">Balance: £{balance}</p>
+        <h2 className=" text-white text-2xl mb-4 font-extrabold">Deposit</h2>
+        <div className="flex justify-between text-white mb-2">
+          <span className="font-bold">Account Number:</span>
+          <span>{CardNumber}</span>
+        </div>
+        <div className="flex justify-between text-white mb-10">
+          <span className="font-bold">Balance:</span>
+          <span>£{balance}</span>
+        </div>
+
 
         <h2 className=" text-white text-2xl mb-4">Deposit how much?</h2>
 
-        <div className="grid grid-cols-2 grid-rows-3 gap-4">
+
+        <div className="grid grid-cols-3 grid-rows-2 gap-4">
           {["1", "5", "10", "20", "50", "100"].map((amount) => (
             <button
               key={amount}
-              className="mt-4 m-2 px-4 py-2 bg-white text-black rounded"
+              className="mt-2 px-4 py-2 m-2 bg-white text-black rounded-full hover:scale-150"
               onClick={() => handleDeposit(Number.parseInt(amount))}
             >
               £{amount}
@@ -471,6 +499,24 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
           <button
             className="mt-4 m-2 px-4 py-2 bg-white text-black rounded"
             onClick={() => handleDeposit(Number.parseInt(customAmount))}
+
+          >
+            Deposit Custom Amount
+          </button>
+
+        </div>
+        <div className="grid" >
+        <input
+            type="number"
+            value={customAmount}
+            onChange={(e) => setCustomAmount(e.target.value)}
+            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded"
+            placeholder="Custom Amount"
+            min="1"
+          />
+          <button
+            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-150"
+            onClick={() => handleDeposit(Number.parseInt(customAmount))}
           >
             Deposit Custom Amount
           </button>
@@ -478,6 +524,7 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
       </motion.div>
       <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
+
         <motion.button
           className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-150"
           initial={{ opacity: 0 }}
