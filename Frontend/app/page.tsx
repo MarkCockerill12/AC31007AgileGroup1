@@ -35,16 +35,18 @@ export default function App() {
   const [balance, setBalance] = useState(1000) // Initial balance
   const [response, setResponse] = useState("");
   // function to handle send transaction and what transaction data is
-     const handleSendTransaction = async () => {
-     const transactionData = { accountNumber, pinNumber };
-    try {
-      console.log(transactionData);
-       const res = await window.electron.sendTransaction(transactionData);
-       setResponse(res);
-     } catch (err) {
-       console.error('Error', err);
-     }
-   };
+  
+  
+  const handleSendTransaction = async () => {
+    const transactionData = { accountNumber, pinNumber, balance };
+  try {
+    console.log(transactionData);
+      const res = await window.electron.sendTransaction(transactionData);
+      setResponse(res);
+    } catch (err) {
+    console.error('Error', err);
+    }
+  };
 
 
   // Return the main div of the app, with a flex column layout, centered items, and a minimum height of 100vh
@@ -58,10 +60,11 @@ export default function App() {
           balance={balance}
           setBalance={setBalance}
           setShowSummary={setShowSummary}
-          handleSendTransaction={handleSendTransaction}
+          response={response}
+          
         />
       ) : showNumericField ? (
-        <NumericInput setShowSummary={setShowSummary} setAccountNumber={setAccountNumber} setPinNumber={setPinNumber} response={response} />
+        <NumericInput setShowSummary={setShowSummary} setAccountNumber={setAccountNumber} setPinNumber={setPinNumber} handleSendTransaction={handleSendTransaction} />
       ) : (
         <Home onButtonClick={() => setShowNumericField(true)} />
       )}
@@ -120,10 +123,11 @@ interface NumericInputProps {
   setShowSummary: (show: boolean) => void
   setAccountNumber: (accountNumber: string) => void
   setPinNumber: (pinNumber: string) => void
+  handleSendTransaction: () => Promise<void>
 }
 
 // Define the function for the numeric input component
-function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }: NumericInputProps) {
+function NumericInput({ setShowSummary, setAccountNumber, setPinNumber, handleSendTransaction }: NumericInputProps) {
   // Set variables
   const [accountNumber, setLocalAccountNumber] = useState("")
   const [pinNumber, setLocalPinNumber] = useState("")
@@ -232,7 +236,16 @@ function NumericInput({ setShowSummary, setAccountNumber, setPinNumber }: Numeri
 }
   
 // Define the function that displays the "summary" of the account number and pin number for testing
-function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary }) {
+interface SummaryProps {
+  accountNumber: string;
+  pinNumber: string;
+  balance: number;
+  setBalance: React.Dispatch<React.SetStateAction<number>>;
+  setShowSummary: React.Dispatch<React.SetStateAction<boolean>>;
+  response: string;
+}
+
+function Summary({ accountNumber, pinNumber, balance, setBalance, setShowSummary, response }: SummaryProps) {
   const [action, setAction] = useState(null)
   const [transactionAmount, setTransactionAmount] = useState(0)
 
