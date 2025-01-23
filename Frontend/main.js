@@ -15,10 +15,23 @@ app.on('ready', () => {
       preload: path.join(__dirname, 'preload.js'),
       nodeIntegration: false,
       contextIsolation: true,
+      enableBlinkFeatures: '', // Disables experimental Blink features
+      experimentalFeatures: false,
     },
   });
 
   mainWindow.loadURL('http://localhost:3000'); // Points to the React/Next.js server to host the window
+
+  mainWindow.webContents.on('did-finish-load', () => {
+    mainWindow.webContents.executeJavaScript(`
+      document.querySelectorAll('input').forEach(input => {
+        input.setAttribute('autocomplete', 'off');
+        input.setAttribute('autocorrect', 'off');
+        input.setAttribute('autocapitalize', 'off');
+        input.setAttribute('spellcheck', 'false');
+      });
+    `).catch(err => console.error('Error executing JavaScript:', err));
+  });
 });
 
 app.on('window-all-closed', () => {
@@ -27,13 +40,15 @@ app.on('window-all-closed', () => {
   } 
 });
 
+
 // Handle requests from the renderer process
 ipcMain.handle('send-transaction', async (event, transactionData) => {
+  console.log("trying to send request")
   return new Promise((resolve, reject) => {
     const client = new net.Socket();
 
     // Connect to the server (replace with your server IP and port)
-    const SERVER_IP = '127.0.0.1';
+    const SERVER_IP = 'localhost';
     const SERVER_PORT = 8080;
 
     client.connect(SERVER_PORT, SERVER_IP, () => {

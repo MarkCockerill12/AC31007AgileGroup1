@@ -38,6 +38,8 @@ export default function App() {
   
   
   const handleSendTransaction = async () => {
+    console.log("testies 2");
+    
     const atmID = "ATM123";
     const TnxTime = new Date().toISOString();
     const TnxKind = 1;
@@ -176,6 +178,8 @@ function NumericInput({ setShowSummary, setCardNumber, setPIN, handleSendTransac
       if (!isEnteringPin) {
         setIsEnteringPin(true)
       } else {
+        console.log("testies");
+        
         // Handle bank detail submission logic here
         setCardNumber(CardNumber)
         setPIN(PIN)
