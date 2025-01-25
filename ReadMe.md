@@ -1,4 +1,4 @@
-![switch tests](https://github.com/github/docs/actions/workflows/main.yml/badge.svg?branch=main)
+![switch tests](https://github.com/MarkCockerill12/AC31007AgileGroup1/actions/workflows/go.yml/badge.svg?branch=main)
 
 ---
 
