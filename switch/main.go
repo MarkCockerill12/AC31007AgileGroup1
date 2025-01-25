@@ -46,7 +46,6 @@ func handleConnection(conn net.Conn) {
 		request := buffer[:bytesRead]
 		fmt.Printf("Received request: %s\n", string(request)) // Added line
 		response, err := forwardRequest(request)
-
 		if err != nil {
 			fmt.Printf("Error processing request: %s\n", err)
 			conn.Write([]byte(fmt.Sprintf("Error: %s", err)))
@@ -82,13 +81,11 @@ func getCardIssuer(cardNumber int) (creditcard.Company, error) {
 		Company: creditcard.Company{},
 	}
 	err := card.Method()
-
 	if err != nil {
 		return creditcard.Company{}, err
 	}
 
 	return card.Company, nil
-
 }
 
 func forwardRequest(request []byte) ([]byte, error) {
@@ -141,7 +138,7 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
-	address := "localhost:8080"
+	address := "0.0.0.0:8080"
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		fmt.Printf("Error starting server: %s\n", err)
