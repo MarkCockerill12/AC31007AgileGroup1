@@ -39,8 +39,12 @@ jobs:
 
       # Install Dependencies
       - name: Install Dependencies
-        run: go mod tidy
+        run: |
+          cd switch
+          go mod tidy
 
       # Run Tests
       - name: Run Tests
-        run: go test ./... -v
+        run: |
+          cd switch
+          go test ./... -v
