@@ -45,10 +45,9 @@ func handleConnection(conn net.Conn) {
 
 		request := buffer[:bytesRead]
 		response, err := forwardRequest(request)
-
 		if err != nil {
 			fmt.Printf("Error processing request: %s\n", err)
-			conn.Write([]byte(fmt.Sprintf("Error: %s", err)))
+			fmt.Fprintf(conn, "Error: %s", err)
 			continue
 		}
 
@@ -81,13 +80,11 @@ func getCardIssuer(cardNumber int) (creditcard.Company, error) {
 		Company: creditcard.Company{},
 	}
 	err := card.Method()
-
 	if err != nil {
 		return creditcard.Company{}, err
 	}
 
 	return card.Company, nil
-
 }
 
 func forwardRequest(request []byte) ([]byte, error) {
