@@ -7,7 +7,7 @@ CREATE TABLE userAccount (
     PhoneNumber VARCHAR(15),
     Gender VARCHAR(20),
     Postcode VARCHAR(7),
-    Balance DOUBLE
+    Balance DECIMAL(10, 2)
 );
 
 -- Create the cardDetails table
@@ -18,7 +18,7 @@ CREATE TABLE cardDetails (
     Expires DATE,
     HolderID INT,
     Bank VARCHAR(45),
-    Network ENUM('VISA', 'MasterCard', 'AmEx'), -- Replace with actual options for the Network
+    Network ENUM('VISA', 'MasterCard'), 
     FOREIGN KEY (HolderID) REFERENCES userAccount(HolderID)
 );
 
