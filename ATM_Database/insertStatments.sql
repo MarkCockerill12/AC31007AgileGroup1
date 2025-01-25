@@ -47,13 +47,13 @@ INSERT INTO cardDetails (PAN, PIN, CVV, Expires, HolderID, Bank, Network)
 VALUES 
 (123456789123456, 1234, 567, '2025-12-31', 1, 'Bank of Example', 'VISA'),
 (234567890123456, 2345, 678, '2026-01-31', 2, 'Global Bank', 'MasterCard'),
-(345678901234567, 3456, 789, '2027-02-28', 3, 'First National Bank', 'AmEx'),
+(345678901234567, 3456, 789, '2027-02-28', 3, 'First National Bank', 'VISA'),
 (456789012345678, 4567, 890, '2028-03-31', 4, 'Secure Trust Bank', 'VISA'),
 (567890123456789, 5678, 901, '2029-04-30', 5, 'Union Bank', 'MasterCard'),
-(678901234567890, 6789, 012, '2030-05-31', 6, 'Community Savings', 'AmEx'),
+(678901234567890, 6789, 012, '2030-05-31', 6, 'Community Savings', 'VISA'),
 (789012345678901, 7890, 123, '2031-06-30', 7, 'Metro Bank', 'VISA'),
 (890123456789012, 8901, 234, '2032-07-31', 8, 'Premier Financial', 'MasterCard'),
-(901234567890123, 9012, 345, '2033-08-31', 9, 'East Coast Bank', 'AmEx'),
+(901234567890123, 9012, 345, '2033-08-31', 9, 'East Coast Bank', 'VISA'),
 (123456789012345, 1234, 456, '2024-09-30', 10, 'Westfield Bank', 'VISA');
 
 -- Insert records into ATM_Details
