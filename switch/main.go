@@ -26,8 +26,8 @@ type Response struct {
 }
 
 var networksAddresses = map[string]string{
-	"visa":       "localhost:8000",
-	"mastercard": "localhost:8001",
+	"visa":       "54.164.156.45:31007",
+	"mastercard": "54.164.156.45:31007",
 }
 
 var (
@@ -52,6 +52,7 @@ func handleConnection(conn net.Conn) {
 		}
 
 		request := buffer[:bytesRead]
+		fmt.Printf("Received request: %s\n", string(request)) // Added line
 		response, err := forwardRequest(request)
 		requestLogger.Channel <- fmt.Sprintf("Request: %s", request)
 		if err != nil {
@@ -152,7 +153,7 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
-	address := "localhost:8080"
+	address := "0.0.0.0:8080"
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		error := fmt.Errorf("ERROR: failed to start server: %w", err)
