@@ -26,34 +26,49 @@ type Response struct {
 }
 
 var networksAddresses = map[string]string{
-	"visa":       "localhost:8000",
-	"mastercard": "localhost:8001",
+	"visa":       "54.164.156.45:31007",
+	"mastercard": "54.164.156.45:31007",
 }
+
+var (
+	transactionLogger = InitLogger("transaction-logs", "transaction-log")
+	requestLogger     = InitLogger("request-logs", "request-log")
+	errorLogger       = InitLogger("error-logs", "error-log")
+)
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close() // Ensure the connection is closed when the function exits
 
-	fmt.Printf("New connection established: %s\n", conn.RemoteAddr().String())
+	fmt.Printf("INFO: New connection established - %s\n", conn.RemoteAddr().String())
 
 	buffer := make([]byte, 1024)
 	for {
 		bytesRead, err := conn.Read(buffer)
 		if err != nil {
 			fmt.Printf("Connection closed by %s\n", conn.RemoteAddr().String())
+			error := fmt.Errorf("ERROR: client(address: %s) closed connection: %w", conn.RemoteAddr().String(), err)
+			errorLogger.Channel <- error.Error()
 			return
 		}
 
 		request := buffer[:bytesRead]
+		fmt.Printf("Received request: %s\n", string(request)) // Added line
 		response, err := forwardRequest(request)
+
+		requestLogger.Channel <- fmt.Sprintf("Request: %s", request)
 		if err != nil {
 			fmt.Printf("Error processing request: %s\n", err)
-			fmt.Fprintf(conn, "Error: %s", err)
+			error := fmt.Errorf("ERROR: failed to process request form client (address: %s): %w", conn.RemoteAddr().String(), err)
+			errorLogger.Channel <- error.Error()
+			conn.Write([]byte(fmt.Sprintf("Error: %s", err)))
 			continue
 		}
 
 		_, err = conn.Write(response)
 		if err != nil {
-			fmt.Printf("Error writing to connection: %s\n", err)
+			error := fmt.Errorf("ERROR: failed to write response to client (address: %s): %w", conn.RemoteAddr().String(), err)
+			fmt.Println(error)
+			errorLogger.Channel <- error.Error()
 			return
 		}
 	}
@@ -108,6 +123,8 @@ func forwardRequest(request []byte) ([]byte, error) {
 		return nil, fmt.Errorf("failed to forward request: %w", err)
 	}
 
+	transactionLogger.Channel <- fmt.Sprintf("Transaction: %s", response)
+
 	return []byte(response), nil
 }
 
@@ -137,21 +154,34 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
-	address := "localhost:8080"
+	address := "0.0.0.0:8080"
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
-		fmt.Printf("Error starting server: %s\n", err)
+		error := fmt.Errorf("ERROR: failed to start server: %w", err)
+		fmt.Println(error)
+		errorLogger.Channel <- error.Error()
 		os.Exit(1)
 	}
 	defer listener.Close()
 
-	fmt.Printf("Server listening on %s\n", address)
+	requestLogger.StartLogger()
+	defer requestLogger.StopLogger()
+
+	transactionLogger.StartLogger()
+	defer transactionLogger.StopLogger()
+
+	errorLogger.StartLogger()
+	defer errorLogger.StopLogger()
+
+	fmt.Printf("INFO: Server listening on %s\n", address)
 
 	for {
 		// Wait for a connection
 		conn, err := listener.Accept()
 		if err != nil {
-			fmt.Printf("Error accepting connection: %s\n", err)
+			error := fmt.Errorf("ERROR: failed to accept connection: %w", err)
+			fmt.Println(error)
+			errorLogger.Channel <- error.Error()
 			continue
 		}
 
