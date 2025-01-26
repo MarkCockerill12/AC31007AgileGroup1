@@ -30,6 +30,11 @@ var networksAddresses = map[string]string{
 	"mastercard": "localhost:8001",
 }
 
+var (
+	transactionLogger = InitLogger("transaction-logs", "transaction-log")
+	requestLogger     = InitLogger("request-logs", "request-log")
+)
+
 func handleConnection(conn net.Conn) {
 	defer conn.Close() // Ensure the connection is closed when the function exits
 
@@ -45,7 +50,7 @@ func handleConnection(conn net.Conn) {
 
 		request := buffer[:bytesRead]
 		response, err := forwardRequest(request)
-
+		requestLogger.Channel <- fmt.Sprintf("Request: %s", request)
 		if err != nil {
 			fmt.Printf("Error processing request: %s\n", err)
 			conn.Write([]byte(fmt.Sprintf("Error: %s", err)))
@@ -81,13 +86,11 @@ func getCardIssuer(cardNumber int) (creditcard.Company, error) {
 		Company: creditcard.Company{},
 	}
 	err := card.Method()
-
 	if err != nil {
 		return creditcard.Company{}, err
 	}
 
 	return card.Company, nil
-
 }
 
 func forwardRequest(request []byte) ([]byte, error) {
@@ -147,6 +150,8 @@ func main() {
 		os.Exit(1)
 	}
 	defer listener.Close()
+	requestLogger.StartLogger()
+	defer requestLogger.StopLogger()
 
 	fmt.Printf("Server listening on %s\n", address)
 
