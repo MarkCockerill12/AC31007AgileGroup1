@@ -54,6 +54,7 @@ func handleConnection(conn net.Conn) {
 		request := buffer[:bytesRead]
 		fmt.Printf("Received request: %s\n", string(request)) // Added line
 		response, err := forwardRequest(request)
+
 		requestLogger.Channel <- fmt.Sprintf("Request: %s", request)
 		if err != nil {
 			fmt.Printf("Error processing request: %s\n", err)
