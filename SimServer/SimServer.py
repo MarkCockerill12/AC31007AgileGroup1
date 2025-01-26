@@ -2,7 +2,6 @@ import socket
 import json
 import mysql.connector
 import os
-import pandas as pd
 from datetime import datetime
 
 #Config
