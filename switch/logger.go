@@ -51,18 +51,16 @@ func InitLogger(logDir, logFile string) *Logger {
 func (logger *Logger) StartLogger() {
 	go func() {
 		for {
-			select {
-			case log, ok := <-logger.Channel:
-				if !ok { // Channel closed
-					fmt.Println("Logger channel closed, stopping logger.")
-					return // Exit the goroutine
-				}
-				// Write log to file
-				_, err := logger.logFile.WriteString(time.Now().UTC().Format(time.RFC3339) + " " + log + "\n")
-				if err != nil {
-					fmt.Printf("Error writing to log file: %v\n", err)
-					panic(err)
-				}
+			log, ok := <-logger.Channel
+			if !ok { // Channel closed
+				fmt.Println("Logger channel closed, stopping logger.")
+				return // Exit the goroutine
+			}
+			// Write log to file
+			_, err := logger.logFile.WriteString(time.Now().UTC().Format(time.RFC3339) + " " + log + "\n")
+			if err != nil {
+				fmt.Printf("Error writing to log file: %v\n", err)
+				panic(err)
 			}
 		}
 	}()
