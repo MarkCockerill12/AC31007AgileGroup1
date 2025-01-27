@@ -1,0 +1,33 @@
+name: Build, Publish, and Deploy Switch
+
+on:
+  pull_request:
+    branches: [ main ]
+    paths:
+      - 'switch/**'
+
+jobs:
+  build-publish-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Login to GitHub Container Registry
+        run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
+      - name: Build Docker Image
+        run: docker build -t ghcr.io/${{ github.repository }}/switch:${{ github.sha }} ./switch
+      - name: Push Docker Image
+        run: docker push ghcr.io/${{ github.repository }}/switch:${{ github.sha }}
+      - name: Deploy to DigitalOcean
+        env:
+          DO_SSH_PRIVATE_KEY: ${{ secrets.DO_SSH_PRIVATE_KEY }}
+          DO_HOST: ${{ secrets.DO_HOST }}
+        run: |
+          echo "${DO_SSH_PRIVATE_KEY}" > do_key
+          chmod 600 do_key
+          ssh -i do_key -o StrictHostKeyChecking=no root@${DO_HOST} << 'EOF'
+            docker pull ghcr.io/${{ github.repository }}/switch:${{ github.sha }}
+            docker stop switch || true
+            docker rm switch || true
+            docker run -d --name switch -p 8080:8080 ghcr.io/${{ github.repository }}/switch:${{ github.sha }}
+          EOF
+          rm do_key
