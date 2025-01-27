@@ -9,36 +9,22 @@ VALUES (123456789123456, 1234, 567, '2025-12-31', 1, 'Bank of Example', 'VISA');
 
 INSERT INTO ATM_Details (Address, Postcode, ModelNumber)
 VALUES ('456 Elm St', 'CD34EF', 'ATM-Model-XYZ');
-
--- Insert records into accountDetails
-INSERT INTO accountDetails (AccountAmount, HolderID)
-VALUES 
-(1000.50, 1),
-(2000.75, 2),
-(3500.40, 3),
-(1500.20, 4),
-(5000.00, 5),
-(1200.90, 6),
-(2200.60, 7),
-(2800.00, 8),
-(4500.30, 9),
-(3000.15, 10);
 */ 
 
 
 -- Insert records into cardHolderDetails
-INSERT INTO userAccount (Surname, Forename, Address, PhoneNumber, Gender, Postcode, Balance)
+INSERT INTO userAccount (Surname, Forename, Address, PhoneNumber, Gender, Postcode, Balance, Blocked, Currency)
 VALUES 
-('Doe', 'John', '123 Main St', '555-123-4567', 'Male', 'AB12CD', 1000.50),
-('Smith', 'Alice', '789 Oak Rd', '555-987-6543', 'Female', 'EF56GH', 2000.75),
-('Johnson', 'Chris', '101 Pine Ave', '555-111-2222', 'Male', 'GH78IJ', 3500.40),
-('Brown', 'Emily', '202 Birch Blvd', '555-222-3333', 'Female', 'IJ90KL', 1500.20),
-('Davis', 'Michael', '303 Cedar Ln', '555-333-4444', 'Male', 'KL12MN', 5000.00),
-('Miller', 'Sarah', '404 Maple Dr', '555-444-5555', 'Female', 'MN23OP', 1200.90),
-('Wilson', 'David', '505 Walnut Ct', '555-555-6666', 'Male', 'OP34QR', 2800.00),
-('Moore', 'Laura', '606 Redwood St', '555-666-7777', 'Female', 'QR45ST', 4500.30),
-('Taylor', 'James', '707 Willow Dr', '555-777-8888', 'Male', 'ST56UV', 230.15),
-('Anderson', 'Sophia', '808 Ash Ln', '555-888-9999', 'Female', 'UV67WX', 9100.15);
+('Doe', 'John', '123 Main St', '555-123-4567', 'Male', 'AB12CD', 1000.50 , 1, 'Pounds'),
+('Smith', 'Alice', '789 Oak Rd', '555-987-6543', 'Female', 'EF56GH', 2000.75, 1, 'Pounds'),
+('Johnson', 'Chris', '101 Pine Ave', '555-111-2222', 'Male', 'GH78IJ', 3500.40, 1, 'Pounds'),
+('Brown', 'Emily', '202 Birch Blvd', '555-222-3333', 'Female', 'IJ90KL', 1500.20, 1, 'Pounds'),
+('Davis', 'Michael', '303 Cedar Ln', '555-333-4444', 'Male', 'KL12MN', 5000.00, 1, 'Pounds'),
+('Miller', 'Sarah', '404 Maple Dr', '555-444-5555', 'Female', 'MN23OP', 1200.90, 1, 'Pounds'),
+('Wilson', 'David', '505 Walnut Ct', '555-555-6666', 'Male', 'OP34QR', 2800.00, 1, 'Pounds'),
+('Moore', 'Laura', '606 Redwood St', '555-666-7777', 'Female', 'QR45ST', 4500.30, 1, 'Pounds'),
+('Taylor', 'James', '707 Willow Dr', '555-777-8888', 'Male', 'ST56UV', 230.15, 1, 'Pounds'),
+('Anderson', 'Sophia', '808 Ash Ln', '555-888-9999', 'Female', 'UV67WX', 9100.15, 1, 'Pounds');
 
 
 
