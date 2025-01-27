@@ -7,7 +7,9 @@ CREATE TABLE userAccount (
     PhoneNumber VARCHAR(15),
     Gender VARCHAR(20),
     Postcode VARCHAR(7),
-    Balance DECIMAL(10, 2)
+    Balance DECIMAL(10, 2),
+    Blocked bool,
+    Currency VARCHAR(20)
 );
 
 -- Create the cardDetails table
