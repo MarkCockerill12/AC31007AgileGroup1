@@ -14,9 +14,9 @@ jobs:
       - name: Login to GitHub Container Registry
         run: echo "${{ secrets.GITHUB_TOKEN }}" | docker login ghcr.io -u ${{ github.actor }} --password-stdin
       - name: Build Docker Image
-        run: docker build -t ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }} ./switch
+        run: docker build -t ghcr.io/${{ toLower(github.repository) }}/switch:${{ github.sha }} ./switch
       - name: Push Docker Image
-        run: docker push ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+        run: docker push ghcr.io/${{ toLower(github.repository) }}/switch:${{ github.sha }}
       - name: Deploy to DigitalOcean
         env:
           DO_SSH_PRIVATE_KEY: ${{ secrets.DO_SSH_PRIVATE_KEY }}
@@ -25,9 +25,9 @@ jobs:
           echo "${DO_SSH_PRIVATE_KEY}" > do_key
           chmod 600 do_key
           ssh -i do_key -o StrictHostKeyChecking=no root@${DO_HOST} << 'EOF'
-            docker pull ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+            docker pull ghcr.io/${{ toLower(github.repository) }}/switch:${{ github.sha }}
             docker stop switch || true
             docker rm switch || true
-            docker run -d --name switch -p 8080:8080 ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+            docker run -d --name switch -p 8080:8080 ghcr.io/${{ toLower(github.repository) }}/switch:${{ github.sha }}
           EOF
           rm do_key
