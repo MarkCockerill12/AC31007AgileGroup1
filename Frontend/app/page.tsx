@@ -23,15 +23,52 @@ declare global {
 }
 
 // Import the global CSS styles that incorporate tailwind styles
-import "./globals.css"
-import Link from "next/link"
+import "./globals.css";
+import Link from "next/link";
 // Import react, usestate, motion for managing functional components and animations
-import type React from "react"
-import { useState, useEffect } from "react"
-import { motion } from "framer-motion"
+import React, { useState, useEffect, createContext, useContext } from "react";
+import { motion } from "framer-motion";
+// Import the translations
+import translations from "./translations.json";
+// Set a context for translations to use across the app
+interface TranslationContextType {
+  t: typeof translations["en"];
+  language: string;
+  setLanguage: React.Dispatch<React.SetStateAction<string>>;
+}
+
+const TranslationContext = createContext<TranslationContextType>({
+  t: translations["en"],
+  language: "en",
+  setLanguage: () => {},
+});
+
+export const TranslationProvider = ({ children }: { children: React.ReactNode }) => {
+  const [language, setLanguage] = useState(() => {
+    // Retrieve the language from local storage or default to 'en'
+    return localStorage.getItem("language") || "en";
+  });
+
+  useEffect(() => {
+    // Store the selected language in local storage
+    localStorage.setItem("language", language);
+  }, [language]);
+
+  const t = translations[language];
+
+  return (
+    <TranslationContext.Provider value={{ t, language, setLanguage }}>
+      {children}
+    </TranslationContext.Provider>
+  );
+};
+
+export const useTranslation = () => useContext(TranslationContext);
 
 // Defines the main functional component of the app
 export default function App() {
+  // Define variable for the current language
+  const {t, language, setLanguage} = useTranslation();
   // Define variable for whether numeric input field should be shown
   const [showNumericField, setShowNumericField] = useState(false)
   // Define variable for whether summary should be shown
@@ -42,9 +79,14 @@ export default function App() {
   const [balance, setBalance] = useState(1000) // Initial balance
   const [response, setResponse] = useState("");
 
+  const handleLanguageChange = (event) => {
+    setLanguage(event.target.value);
+  };
+
   // Return the main div of the app, with a flex column layout, centered items, and a minimum height of 100vh
   //If showSummary is true, show the Summary component, else if showNumericField is true, show the NumericInput component, else show the Home component
   return (
+    <TranslationProvider>
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
       {showSummary ? (
         <Summary
@@ -67,11 +109,13 @@ export default function App() {
         <Home onButtonClick={() => setShowNumericField(true)} />
       )}
     </div>
+  </TranslationProvider>
   )
 }
 
 // Define the function for the main home component
 function Home({ onButtonClick }) {
+  const { t, language, setLanguage } = useTranslation();
   return (
     // Display the main text, subtext, and button of the home component all with smooth animations
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -82,7 +126,7 @@ function Home({ onButtonClick }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
         >
-          NCR ATM
+          {t.title}
         </motion.h1>
         <motion.h2
           className="text-2xl md:text-3xl mb-8 text-blue-500 dark:text-blue-400"
@@ -90,7 +134,7 @@ function Home({ onButtonClick }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Glory to the New California Republic
+          {t.subtitle}
         </motion.h2>
 
         <motion.p
@@ -99,7 +143,7 @@ function Home({ onButtonClick }) {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5, delay: 0.6 }}
         >
-          To Start Entering Your Transaction, Click Below
+          {t.description}
         </motion.p>
       </div>
       <div className="flex justify-center cursor-pointer">
@@ -120,7 +164,18 @@ function Home({ onButtonClick }) {
           whileHover={{ backgroundImage: "url(/assets/enterCardHover.png)" }}
           whileTap={{ backgroundImage: "url(/assets/enterCardOnClick.png)" }}
         ></motion.div>
-
+      </div>
+      <div className="fixed bottom-0 right-0 mb-4 mr-4">
+      <select value={language} onChange={(e) => setLanguage(e.target.value)} className="px-4 py-2 bg-white text-black rounded">
+          <option value="en">English</option>
+          <option value="es">Español</option>
+          <option value="fr">Français</option>
+          <option value="de">Deutsch</option>
+          <option value="zh">中文</option>
+          <option value="ja">日本語</option>
+          <option value="ru">Русский</option>
+          <option value="ar">العربية</option>
+        </select>
       </div>
     </div>
   )
@@ -136,6 +191,7 @@ interface NumericInputProps {
 // Define the function for the numeric input component
 function NumericInput({ setShowSummary, setCardNumber, setPIN, handleSendTransaction }: NumericInputProps) {
   // Set variables
+  const { t } = useTranslation();
   const [CardNumber, setLocalCardNumber] = useState("")
   const [PIN, setLocalPIN] = useState("")
   const [isEnteringPin, setIsEnteringPin] = useState(false)
@@ -193,7 +249,7 @@ function NumericInput({ setShowSummary, setCardNumber, setPIN, handleSendTransac
         transition={{ duration: 0.5 }}
       >
         <label htmlFor="numeric-field" className="text-white font-bold mb-2">
-          {isEnteringPin ? "Enter your PIN" : "Enter your Account Number"}
+          {isEnteringPin ? t.enterPin : t.enterCardNumber}
         </label>
         <input
           type="text"
@@ -226,7 +282,7 @@ function NumericInput({ setShowSummary, setCardNumber, setPIN, handleSendTransac
           transition={{ duration: 0.5 }}
           onClick={handleGoBack}
         >
-          Go Back
+          {t.goBack}
         </motion.button>
       </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
@@ -246,6 +302,7 @@ interface SummaryProps {
 
 function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, response, setResponse }) {
   const [action, setAction] = useState(null)
+  const { t } = useTranslation();
   const [transactionAmount, setTransactionAmount] = useState(0)
   const [transactionKind, setTransactionKind] = useState(null)
 
@@ -298,17 +355,17 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
         transition={{ duration: 0.5 }}
       >
         
-        <h2 className="text-white text-2xl mb-4 font-extrabold">Account Summary</h2>
+        <h2 className="text-white text-2xl mb-4 font-extrabold">{t.accountSummary}</h2>
         <div className="flex justify-between text-white mb-2">
-          <span className="font-bold">Account Number:</span>
+          <span className="font-bold">{t.accountNumber}:</span>
           <span>{CardNumber}</span>
         </div>
         <div className="flex justify-between text-white mb-2">
-          <span className="font-bold">Balance:</span>
+          <span className="font-bold">{t.balance}:</span>
           <span>£{balance}</span>
         </div>
         <div className="flex justify-between text-white mb-2">
-        <span className="font-bold">Last Transaction:</span>
+        <span className="font-bold">{t.lastTransaction}:</span>
         {transactionAmount > 0 && (
           <span>
             {transactionKind === "withdraw" ? "-" : "+"}£{transactionAmount}
@@ -316,7 +373,7 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
         )}
         </div>
         <div className="flex justify-between text-white mb-2">
-          <span className="font-bold">Response:</span>
+          <span className="font-bold">{t.response}:</span>
           <span>{response}</span>
         </div>
 
@@ -324,13 +381,13 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
           className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
           onClick={() => setAction("withdraw")}
         >
-          Withdraw
+          {t.withdrawal}
         </button>
         <button
           className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
           onClick={() => setAction("deposit")}
         >
-          Deposit
+          {t.deposit}
         </button>
       </motion.div>
       <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
@@ -342,7 +399,7 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
           transition={{ duration: 0.5 }}
           onClick={handleGoBack}
         >
-          Go Back
+          {t.goBack}
         </motion.button>
       </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
@@ -354,6 +411,7 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
   // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
   const [showPopup, setShowPopup] = useState(false);
+  const { t } = useTranslation();
   // Declare a function to handle withdrawing money
   // Check to make sure amount is valid, then update the balance and show the summary
   const handleWithdraw = (amount) => {
@@ -384,17 +442,17 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className=" text-white text-2xl mb-4 font-extrabold">Withdrawal</h2>
+        <h2 className=" text-white text-2xl mb-4 font-extrabold">{t.withdrawal}</h2>
         <div className="flex justify-between text-white mb-2">
-          <span className="font-bold">Account Number:</span>
+          <span className="font-bold">{t.accountNumber}:</span>
           <span>{CardNumber}</span>
         </div>
         <div className="flex justify-between text-white mb-10">
-          <span className="font-bold">Balance:</span>
+          <span className="font-bold">{t.balance}:</span>
           <span>£{balance}</span>
         </div>
 
-        <h2 className=" text-white text-2xl mb-4">Withdraw how much?</h2>
+        <h2 className=" text-white text-2xl mb-4">{t.withdrawAmount}</h2>
 
         <div className="grid grid-cols-3 grid-rows-2 gap-4">
           {["1", "5", "10", "20", "50", "100"].map((amount) => (
@@ -420,18 +478,18 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
             className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-125"
             onClick={() => handleWithdraw(Number.parseInt(customAmount))}
           >
-            Withdraw Custom Amount
+            {t.withdrawCustomAmount}
           </button>
         </div>
         {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-4 rounded font-bold">
-            <p>Invalid Transaction</p>
+            <p>{t.invalidTransaction}</p>
             <button
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded font-bold hover:scale-125"
               onClick={invalidTransaction}
             >
-              Close
+              {t.close}
             </button>
           </div>
         </div>
@@ -446,7 +504,7 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
           transition={{ duration: 0.5 }}
           onClick={handleGoBack}
         >
-          Go Back
+          {t.goBack}
         </motion.button>
       </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
@@ -458,6 +516,7 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
   // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
   const [showPopup, setShowPopup] = useState(false);
+  const { t } = useTranslation();
   // Declare a function to handle depositing money
   // Check to make sure amount is valid, then update the balance and show the summary
   const handleDeposit = (amount) => {
@@ -489,18 +548,18 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className=" text-white text-2xl mb-4 font-extrabold">Deposit</h2>
+        <h2 className=" text-white text-2xl mb-4 font-extrabold">{t.deposit}</h2>
         <div className="flex justify-between text-white mb-2">
-          <span className="font-bold">Account Number:</span>
+          <span className="font-bold">{t.accountNumber}:</span>
           <span>{CardNumber}</span>
         </div>
         <div className="flex justify-between text-white mb-10">
-          <span className="font-bold">Balance:</span>
+          <span className="font-bold">{t.balance}:</span>
           <span>£{balance}</span>
         </div>
 
 
-        <h2 className=" text-white text-2xl mb-4">Deposit how much?</h2>
+        <h2 className=" text-white text-2xl mb-4">{t.depositAmount}</h2>
 
 
         <div className="grid grid-cols-3 grid-rows-2 gap-4">
@@ -527,18 +586,18 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
             className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-125"
             onClick={() => handleDeposit(Number.parseInt(customAmount))}
           >
-            Deposit Custom Amount
+            {t.depositCustomAmount}
           </button>
         </div>
         {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
           <div className="bg-white p-4 rounded">
-            <p>Invalid Transaction</p>
+            <p>{t.invalidTransaction}</p>
             <button
               className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
               onClick={invalidTransaction}
             >
-              Close
+              {t.close}
             </button>
           </div>
         </div>
@@ -554,7 +613,7 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
           transition={{ duration: 0.5 }}
           onClick={handleGoBack}
         >
-          Go Back
+          {t.goBack}
         </motion.button>
       </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
