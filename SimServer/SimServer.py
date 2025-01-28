@@ -10,10 +10,15 @@ tcp_port = 31007
 buffer_size = 1024
 log_file_name = "logFile.txt"
 
-#DB Config
-db_host = "localhost"
-user = "user"
-password = "AC31007"
+mydb = mysql.connector.connect(
+    host = 'localhost',
+    user = 'user',
+    password = 'AC31007',
+    database = 'atm_database',
+    ssl_disabled = True
+
+)
+
 
 def handle_switch_connection(incoming_socket, incoming_address):
     try:
@@ -58,6 +63,16 @@ def check_logfile():
 
  
 def start_server():
+    mycursor = mydb.cursor()
+    mycursor.execute(" SELECT * FROM userAccount")
+    selectGET = mycursor.fetchall()
+
+    for y in selectGET:
+        print(y)
+
+
+
+
     check_logfile()
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
