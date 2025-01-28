@@ -20,8 +20,8 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }} ./switch
-          docker push ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+          docker build -t ghcr.io/victorbratov/switch_repo/switch:latest ./switch
+          docker push ghcr.io/victorbratov/switch_repo/switch:latest
 
 
       - name: Deploy to DigitalOcean
@@ -32,9 +32,9 @@ jobs:
           echo "${DO_SSH_PRIVATE_KEY}" > do_key
           chmod 600 do_key
           ssh -i do_key -o StrictHostKeyChecking=no root@${DO_HOST} << 'EOF'
-            docker pull ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+            docker pull ghcr.io/victorbratov/switch_repo/switch:latest
             docker stop switch || true
             docker rm switch || true
-            docker run -d --name switch -p 8080:8080 ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+            docker run -d --name switch -p 8080:8080 ghcr.io/victorbratov/switch_repo/switch:latest
           EOF
           rm do_key
