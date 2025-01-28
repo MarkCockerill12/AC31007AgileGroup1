@@ -20,7 +20,7 @@ jobs:
 
       - name: Build and push Docker image
         run: |
-          docker build -t ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+          docker build -t ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }} ./switch
           docker push ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
 
 
