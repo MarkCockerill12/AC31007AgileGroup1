@@ -2,6 +2,7 @@ import socket
 import json
 import mysql.connector
 import os
+import pymysql
 from datetime import datetime
 
 #Config
@@ -10,7 +11,7 @@ tcp_port = 31007
 buffer_size = 1024
 log_file_name = "logFile.txt"
 
-mydb = mysql.connector.connect(
+mydb = mydb = pymysql.connect(
     host = 'localhost',
     user = 'user',
     password = 'AC31007',
