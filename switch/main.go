@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -136,8 +137,18 @@ func forwardRequest(request []byte) ([]byte, error) {
 
 func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 	// Establish a TLS/TCP connection
-	conf := &tls.Config{ //The thing below is for dev environment, as is insecure.
-		InsecureSkipVerify: true,
+
+	certFile, err := os.ReadFile("simulation-cert.pem") // change to be the correct certificate for the simulation
+	if err != nil {
+		return "", fmt.Errorf("failed to read server certificate: %w", err)
+	}
+	certPool := x509.NewCertPool()
+	if ok := certPool.AppendCertsFromPEM(certFile); !ok {
+		return "", fmt.Errorf("unable to parse server certificate")
+	}
+
+	conf := &tls.Config{
+		RootCAs: certPool,
 	}
 
 	conn, err := tls.Dial("tcp", serverAddr, conf)
