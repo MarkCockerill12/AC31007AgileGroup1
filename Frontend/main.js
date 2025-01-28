@@ -3,6 +3,8 @@
 const { app, BrowserWindow, ipcMain } = require("electron")
 const path = require("path")
 const net = require("net")
+const tls = require("tls")
+const fs = require("fs")
 
 let mainWindow
 
@@ -43,19 +45,17 @@ app.on("window-all-closed", () => {
 })
 
 // Handle requests from the renderer process
-ipcMain.handle("send-transaction", async (event, transactionData) => {
-  console.log("main: Received transaction data", transactionData)
+ipcMain.handle('send-transaction', (_, transactionData) => {
   return new Promise((resolve, reject) => {
-    const client = new net.Socket()
+    const options = {
+      host: 'localhost',
+      port: 8000,
+      rejectUnauthorized: false, // Only for development
+      ca: [fs.readFileSync(path.join(__dirname, 'certs/server-cert.pem'))]
+    }
 
-    // Connect to the server (replace with your server IP and port)
-    const SERVER_IP = "localhost"
-    const SERVER_PORT = 8080
-
-    client.connect(SERVER_PORT, SERVER_IP, () => {
-      console.log("main: Connected to the server")
-
-      // Serialize transaction data and send it
+    const client = tls.connect(options, () => {
+      console.log("main: Secure connection established")
       const message = JSON.stringify(transactionData)
       console.log("main: Sending message to server", message)
       client.write(message)
@@ -63,13 +63,13 @@ ipcMain.handle("send-transaction", async (event, transactionData) => {
 
     client.on("data", (data) => {
       console.log("main: Received response from server:", data.toString())
-      resolve(data.toString()) // Resolve with the server's response
-      client.destroy() // Close the connection
+      resolve(data.toString())
+      client.end()
     })
 
     client.on("error", (err) => {
       console.error("main: Connection error:", err)
-      reject(err) // Reject on error
+      reject(err)
     })
 
     client.on("close", () => {
