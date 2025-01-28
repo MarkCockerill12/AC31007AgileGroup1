@@ -2,6 +2,7 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -129,8 +130,12 @@ func forwardRequest(request []byte) ([]byte, error) {
 }
 
 func SendTCPMessage(serverAddr string, message []byte) (string, error) {
-	// Establish a TCP connection
-	conn, err := net.Dial("tcp", serverAddr)
+	// Establish a TLS/TCP connection
+	conf := &tls.Config{ //The thing below is for dev environment, as is insecure.
+		InsecureSkipVerify: true,
+	}
+
+	conn, err := tls.Dial("tcp", serverAddr, conf)
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to server: %w", err)
 	}
@@ -155,7 +160,17 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 func main() {
 	// Define the address and port to listen on
 	address := "0.0.0.0:8080"
-	listener, err := net.Listen("tcp", address)
+	cer, err := tls.LoadX509KeyPair("server.crt", "server.key") //server.crt and server.key are the certificate files. These must contain PEM encoded data.
+
+	if err != nil {
+		error := fmt.Errorf("ERROR: failed to load certificates: %w", err)
+		fmt.Println(error)
+		errorLogger.Channel <- error.Error()
+		os.Exit(1)
+	}
+
+	config := &tls.Config{Certificates: []tls.Certificate{cer}} //
+	listener, err := tls.Listen("tcp", address, config)
 	if err != nil {
 		error := fmt.Errorf("ERROR: failed to start server: %w", err)
 		fmt.Println(error)
