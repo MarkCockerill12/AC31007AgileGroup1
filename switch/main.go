@@ -170,7 +170,7 @@ func main() {
 	if err != nil {
 		error := fmt.Errorf("ERROR: failed to load certificates: %w", err)
 		fmt.Println(error)
-		errorLogger.Channel <- error.Error()
+		errorLogger.Channel <- error
 		os.Exit(1)
 	}
 
