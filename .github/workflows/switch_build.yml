@@ -24,7 +24,7 @@ jobs:
         with:
           context: ./switch
           push: true
-          tags: switch_repo/switch:${{ github.sha }}
+          tags: ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
 
       - name: Deploy to DigitalOcean
         env:
