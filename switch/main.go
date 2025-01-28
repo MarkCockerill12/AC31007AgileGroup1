@@ -159,7 +159,13 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
-	address := "0.0.0.0:8080"
+	port, ok := os.LookupEnv("SWITCH_PORT")
+	if !ok {
+		err := fmt.Errorf("ERROR: SWITCH_PORT environment variable not set")
+		errorLogger.Channel <- err
+		os.Exit(1)
+	}
+	address := fmt.Sprintf("0.0.0.0:%s", port)
 	listener, err := net.Listen("tcp", address)
 	if err != nil {
 		error := fmt.Errorf("ERROR: failed to start server: %w", err)
@@ -185,7 +191,6 @@ func main() {
 		conn, err := listener.Accept()
 		if err != nil {
 			error := fmt.Errorf("ERROR: failed to accept connection: %w", err)
-			fmt.Println(error)
 			errorLogger.Channel <- error
 			continue
 		}

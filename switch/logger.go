@@ -66,8 +66,12 @@ func (logger *Logger[T]) StartLogger() {
 				panic(err)
 			}
 
+			record := time.Now().UTC().Format(time.RFC3339) + "\n" + logger.stringify(loggedVal) + "\n"
+
+			fmt.Println(record)
+
 			// Write log to file
-			_, err := logger.logFile.WriteString(time.Now().UTC().Format(time.RFC3339) + "\n" + logger.stringify(loggedVal) + "\n")
+			_, err := logger.logFile.WriteString(record)
 			if err != nil {
 				fmt.Printf("Error writing to log file: %v\n", err)
 				panic(err)
