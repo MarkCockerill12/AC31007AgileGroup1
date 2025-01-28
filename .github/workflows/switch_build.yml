@@ -1,10 +1,8 @@
 name: Build, Publish, and Deploy Switch
 
 on:
-  pull_request:
-    branches: [ main ]
-    paths:
-      - 'switch/**'
+  push:
+    branches: [ viktor-automatic-deployment ]
 
 jobs:
   build-publish-deploy:
@@ -15,7 +13,7 @@ jobs:
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
-          registry: ghrc.io
+          registry: ghcr.io
           username: victorbratov
           password: ${{ secrets.TOKEN }}
       - name: Build and push Docker image
