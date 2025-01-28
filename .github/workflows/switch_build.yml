@@ -19,12 +19,10 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        id: push
-        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
-        with:
-          context: ./switch
-          push: true
-          tags: ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+        run: |
+          docker build -t ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+          docker push ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+
 
       - name: Deploy to DigitalOcean
         env:
