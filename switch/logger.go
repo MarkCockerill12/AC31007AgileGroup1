@@ -6,6 +6,8 @@ import (
 	"time"
 )
 
+const logsDirectory = "logs"
+
 type Logger[T any] struct {
 	logDirName  string
 	logFileName string
@@ -31,15 +33,15 @@ func InitLogger[T any](dirName, fileName string, stringifyFunc func(T) string) *
 	}
 
 	// Create log directory if it doesn't exist
-	if _, err := os.Stat(logger.logDirName); os.IsNotExist(err) {
-		if err := os.MkdirAll(logger.logDirName, 0755); err != nil {
+	if _, err := os.Stat(fmt.Sprintf("%s/%s", logsDirectory, logger.logDirName)); os.IsNotExist(err) {
+		if err := os.MkdirAll(fmt.Sprintf("%s/%s", logsDirectory, logger.logDirName), 0755); err != nil {
 			fmt.Printf("Error creating log directory: %v\n", err)
 			panic(err)
 		}
 	}
 
 	// Open log file for writing
-	filePath := fmt.Sprintf("%s/%s-%s.txt", logger.logDirName, logger.logFileName, time.Now().UTC().Format("20060102-150405"))
+	filePath := fmt.Sprintf("%s/%s/%s-%s.txt", logsDirectory, logger.logDirName, logger.logFileName, time.Now().UTC().Format("20060102-150405"))
 	file, err := os.OpenFile(filePath, os.O_APPEND|os.O_CREATE|os.O_WRONLY, 0644)
 	if err != nil {
 		fmt.Printf("Error opening log file: %v\n", err)
