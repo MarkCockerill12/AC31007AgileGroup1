@@ -220,7 +220,7 @@ function NumericInput({ setShowSummary, setCardNumber, setPIN, handleSendTransac
       <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
         <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-150"
+          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -308,24 +308,26 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
           <span>£{balance}</span>
         </div>
         <div className="flex justify-between text-white mb-2">
+        <span className="font-bold">Last Transaction:</span>
         {transactionAmount > 0 && (
-          <span className="text-white mb-2">
-            Last Transaction: {transactionKind === "withdraw" ? "-" : "+"}£{transactionAmount}
+          <span>
+            {transactionKind === "withdraw" ? "-" : "+"}£{transactionAmount}
           </span>
         )}
         </div>
         <div className="flex justify-between text-white mb-2">
-          <p className="text-white mb-2">Response: {response}</p>
+          <span className="font-bold">Response:</span>
+          <span>{response}</span>
         </div>
 
         <button
-          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-150"
+          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
           onClick={() => setAction("withdraw")}
         >
           Withdraw
         </button>
         <button
-          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-150"
+          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
           onClick={() => setAction("deposit")}
         >
           Deposit
@@ -334,13 +336,13 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
       <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
         <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-150"
+          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
           onClick={handleGoBack}
         >
-          Sign Out
+          Go Back
         </motion.button>
       </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
@@ -351,6 +353,7 @@ function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, respons
 function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTransactionAmount, setResponse }) {
   // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
+  const [showPopup, setShowPopup] = useState(false);
   // Declare a function to handle withdrawing money
   // Check to make sure amount is valid, then update the balance and show the summary
   const handleWithdraw = (amount) => {
@@ -360,7 +363,7 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
       handleSendTransaction(1, amount, CardNumber, PIN, setResponse) // 1 for withdrawal
       setShowSummary(true)
     } else {
-      alert("Invalid amount")
+      setShowPopup(true);
     }
   }
 
@@ -368,6 +371,10 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
   const handleGoBack = () => {
     setShowSummary(true)
   }
+  const invalidTransaction = () => {
+    setShowPopup(false);
+    window.location.reload();
+  };
   // Display the withdraw component with the account number, pin number, balance, and withdraw buttons
   return (
     <>
@@ -393,7 +400,7 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
           {["1", "5", "10", "20", "50", "100"].map((amount) => (
             <button
               key={amount}
-              className="mt-2 px-4 py-2 m-2 bg-white text-black rounded-full hover:scale-150"
+              className="mt-2 px-4 py-2 m-2 bg-white text-black rounded-full hover:scale-125"
               onClick={() => handleWithdraw(Number.parseInt(amount))}
             >
               £{amount}
@@ -410,17 +417,30 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
             min="1"
           />
           <button
-            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-150"
+            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-125"
             onClick={() => handleWithdraw(Number.parseInt(customAmount))}
           >
             Withdraw Custom Amount
           </button>
         </div>
+        {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded font-bold">
+            <p>Invalid Transaction</p>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded font-bold hover:scale-125"
+              onClick={invalidTransaction}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
       </motion.div>
       <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
         <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-150"
+          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -437,6 +457,7 @@ function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary, setTra
 function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTransactionAmount, setResponse }) {
   // Declare variable to handle withdrawing custom amounts
   const [customAmount, setCustomAmount] = useState("")
+  const [showPopup, setShowPopup] = useState(false);
   // Declare a function to handle depositing money
   // Check to make sure amount is valid, then update the balance and show the summary
   const handleDeposit = (amount) => {
@@ -446,13 +467,17 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
       handleSendTransaction(2, amount, CardNumber, PIN, setResponse) // 2 for deposit
       setShowSummary(true)
     } else {
-      alert("Invalid amount")
+      setShowPopup(true);
     }
   }
   // Back Button functionality
   const handleGoBack = () => {
     setShowSummary(true)
   }
+  const invalidTransaction = () => {
+    setShowPopup(false);
+    window.location.reload();
+  };
 
   // Display the deposit component with the account number, pin number, balance, and withdraw buttons
   return (
@@ -482,28 +507,12 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
           {["1", "5", "10", "20", "50", "100"].map((amount) => (
             <button
               key={amount}
-              className="mt-2 px-4 py-2 m-2 bg-white text-black rounded-full hover:scale-150"
+              className="mt-2 px-4 py-2 m-2 bg-white text-black rounded-full hover:scale-125"
               onClick={() => handleDeposit(Number.parseInt(amount))}
             >
               £{amount}
             </button>
           ))}
-          <input
-            type="number"
-            value={customAmount}
-            onChange={(e) => setCustomAmount(e.target.value)}
-            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded"
-            placeholder="Custom Amount"
-            min="1"
-          />
-          <button
-            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded"
-            onClick={() => handleDeposit(Number.parseInt(customAmount))}
-
-          >
-            Deposit Custom Amount
-          </button>
-
         </div>
         <div className="grid" >
         <input
@@ -515,18 +524,31 @@ function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, setTran
             min="1"
           />
           <button
-            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-150"
+            className="mt-4 m-2 px-4 py-2 bg-white text-black rounded hover:scale-125"
             onClick={() => handleDeposit(Number.parseInt(customAmount))}
           >
             Deposit Custom Amount
           </button>
         </div>
+        {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-4 rounded">
+            <p>Invalid Transaction</p>
+            <button
+              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
+              onClick={invalidTransaction}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}  
       </motion.div>
       <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
 
         <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-150"
+          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
