@@ -16,7 +16,7 @@ jobs:
         with:
           registry: ghcr.io
           username: victorbratov
-          password: ${{ secrets.TOKEN }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
         id: push
