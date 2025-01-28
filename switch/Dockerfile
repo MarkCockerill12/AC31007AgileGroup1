@@ -15,7 +15,7 @@ RUN go mod download
 COPY . .
 
 # Build a static Go binary
-RUN go build -o switch -ldflags "-extldflags=-static" main.go
+RUN go build -o switch -ldflags "-extldflags=-static" main.go logger.go
 
 # Use a minimal base image for the runtime
 FROM scratch
