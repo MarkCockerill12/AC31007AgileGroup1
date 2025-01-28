@@ -10,5 +10,7 @@ docker rm switch || true
 docker run -d \
   --name switch \
   -p 8080:8080 \
-  -v /logs:/logs \
+  -v ./logs:/app/logs \
+  -e SWITCH_PORT=8080 \
+  --restart unless-stopped \
   ghcr.io/victorbratov/switch_repo/switch:latest
