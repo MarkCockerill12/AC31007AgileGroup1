@@ -22,11 +22,11 @@
               if (this.status == 200) {
                 document.getElementById("log").innerHTML = this.responseText;
               } else {
-                console.error('Failed to load log file');
+                console.error('Failed to load log file' + this.status);
               }
             }
           };
-          xhttp.open("GET", "../logFile.txt", true);
+          xhttp.open("GET", "/home/ubuntu/Server/logFile.txt", true);
           xhttp.send();
         }
     </script>
