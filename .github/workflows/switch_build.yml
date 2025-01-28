@@ -10,13 +10,21 @@ jobs:
   build-publish-deploy:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - name: Login to GitHub Container Registry
-        run: echo "${{ secrets.TOKEN }}" | docker login ghcr.io -u victorbratov --password-stdin
-      - name: Build Docker Image
-        run: docker build -t ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }} ./switch
-      - name: Push Docker Image
-        run: docker push ghcr.io/victorbratov/switch_repo/switch:${{ github.sha }}
+      - name: checkout repo
+      - uses: actions/checkout@v4
+      - name: Log in to the Container registry
+        uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
+        with:
+          registry: ghrc.io
+          username: victorbratov
+          password: ${{ secrets.TOKEN }}
+      - name: Build and push Docker image
+        id: push
+        uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
+        with:
+          context: ./switch
+          push: true
+          tags: ${{ github.sha }}
       - name: Deploy to DigitalOcean
         env:
           DO_SSH_PRIVATE_KEY: ${{ secrets.DO_SSH_PRIVATE_KEY }}
