@@ -67,10 +67,14 @@ export const useTranslation = () => useContext(TranslationContext);
 
 // Defines the main functional component of the app
 export default function App() {
+
+ 
+
   // Define variable for the current language
   const {t, language, setLanguage} = useTranslation();
-  // Define variable for whether numeric input field should be shown
-  const [showNumericField, setShowNumericField] = useState(false)
+
+   // Define variable for whether login buttons should be shown
+  const [showLoginButtons, setShowLoginButtons] = useState(false)
   // Define variable for whether summary should be shown
   const [showSummary, setShowSummary] = useState(false)
   // Define variables for account number and pin number
@@ -84,7 +88,7 @@ export default function App() {
   };
 
   // Return the main div of the app, with a flex column layout, centered items, and a minimum height of 100vh
-  //If showSummary is true, show the Summary component, else if showNumericField is true, show the NumericInput component, else show the Home component
+  // If showSummary is true, show the Summary component, else if showLoginButtons is true, show the LoginButtons component, else show the Home component
   return (
     <TranslationProvider>
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
@@ -98,15 +102,14 @@ export default function App() {
           response={response}
           setResponse={setResponse}
         />
-      ) : showNumericField ? (
-        <NumericInput
-          setShowSummary={setShowSummary}
+      ) : showLoginButtons ? (
+        <LoginButtons
           setCardNumber={setCardNumber}
           setPIN={setPIN}
-          handleSendTransaction={handleSendTransaction}
+          setShowSummary={setShowSummary}
         />
       ) : (
-        <Home onButtonClick={() => setShowNumericField(true)} />
+        <Home onButtonClick={() => setShowLoginButtons(true)} />
       )}
     </div>
   </TranslationProvider>
@@ -181,112 +184,58 @@ function Home({ onButtonClick }) {
   )
 }
 
-interface NumericInputProps {
-  setShowSummary: (show: boolean) => void
+interface LoginButtonsProps {
   setCardNumber: (CardNumber: string) => void
   setPIN: (PIN: string) => void
-  handleSendTransaction: (transactionKind: number, amount: number, CardNumber: string, PIN: string, setResponse: (response: string) => void) => Promise<void>
+  setShowSummary: (show: boolean) => void
 }
 
-// Define the function for the numeric input component
-function NumericInput({ setShowSummary, setCardNumber, setPIN, handleSendTransaction }: NumericInputProps) {
-  // Set variables
-  const { t } = useTranslation();
-  const [CardNumber, setLocalCardNumber] = useState("")
-  const [PIN, setLocalPIN] = useState("")
-  const [isEnteringPin, setIsEnteringPin] = useState(false)
-  // Define the state for response
-  const [response, setResponse] = useState("");
 
-  // Define the handler function for clicking keypad buttons
-  const handleKeypadClick = (value: string) => {
-    // If the back button is pressed, remove the last character from the input field
-    if (value === "Back") {
-      if (isEnteringPin) {
-        if (PIN.length > 0) {
-          setLocalPIN(PIN.slice(0, -1))
-        } else {
-          setIsEnteringPin(false)
-        }
-      } else {
-        if (CardNumber.length > 0) {
-          setLocalCardNumber(CardNumber.slice(0, -1))
-        }
-      }
-      // If the enter button is pressed, check if the user is entering the pin or account number
-    } else if (value === "Enter") {
-      if (!isEnteringPin) {
-        setIsEnteringPin(true)
-      } else {
-        console.log("PIN entered, sending transaction")
-        setCardNumber(CardNumber)
-        setPIN(PIN)
-        handleSendTransaction(0, 0, CardNumber, PIN, setResponse) // 0 for PIN verification
-        setShowSummary(true)
-      }
-      // If any other button is pressed, add the value to the to the local pin/account number depending on state
-    } else {
-      if (isEnteringPin) {
-        setLocalPIN((prev) => prev + value)
-      } else {
-        setLocalCardNumber((prev) => prev + value)
-      }
-    }
+// Define the function for the login buttons component
+function LoginButtons({ setCardNumber, setPIN, setShowSummary }: LoginButtonsProps) {
+  const accounts = [
+    { CardNumber: "4242424242424242", PIN: "1234" },
+    { CardNumber: "987654321", PIN: "4321" },
+    { CardNumber: "456789123", PIN: "5678" },
+    { CardNumber: "789123456", PIN: "8765" },
+  ]
+
+  const handleLogin = (account) => {
+    setCardNumber(account.CardNumber)
+    setPIN(account.PIN)
+    setShowSummary(true)
+
   }
 
-  // Back button
-  const handleGoBack = () => {
-    window.location.reload()
-  }
+  const buttonColors = ["bg-red-500", "bg-green-500", "bg-blue-500", "bg-yellow-500"]
 
-  //Return the main div of the numeric input component (our keypad) with various stylings and animations + Back Button
   return (
-    <>
-      <motion.div
-        className="flex flex-col items-center"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
-        <label htmlFor="numeric-field" className="text-white font-bold mb-2">
-          {isEnteringPin ? t.enterPin : t.enterCardNumber}
-        </label>
-        <input
-          type="text"
-          value={isEnteringPin ? PIN : CardNumber}
-          readOnly
-          className="border p-2 mb-4 border-gray-300 text-black"
-          id="numeric-field"
-          aria-live="polite"
-        />
-        <div className="grid grid-cols-3 gap-2 mt-2 rounded-md" role="group" aria-label="Numeric keypad">
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9", "Back", "0", "Enter"].map((button) => (
-            <button
-              key={button}
-              className="text-white font-extrabold p-1 text-center transition-transform size-16 duration-200 hover:scale-150"
-              onMouseDown={(e) => e.preventDefault()}
-              onClick={() => handleKeypadClick(button)}
-              aria-label={button}
-            >
-              {button}
-            </button>
-          ))}
-        </div>
-      </motion.div>
-      <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
-        <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
-        <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          onClick={handleGoBack}
-        >
-          {t.goBack}
-        </motion.button>
+    <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
+      <h2 className="text-white text-2xl mb-4 font-extrabold">Select Your Account</h2>
+      <div className="flex space-x-4">
+        {accounts.map((account, index) => (
+          <div key={index} className="flex flex-col items-center justify-center cursor-pointer" onClick={() => handleLogin(account)}>
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5, transitionDelay: 0.6 }}
+              style={{
+                backgroundImage: "url(/assets/enterCard.png)",
+                backgroundSize: "contain",
+                backgroundPosition: "center",
+                backgroundRepeat: "no-repeat",
+                width: "200px",
+                height: "150px",
+                border: `4px solid ${buttonColors[index].replace('bg-', '')}`
+              }}
+              whileHover={{ backgroundImage: "url(/assets/enterCardHover.png)" }}
+              whileTap={{ backgroundImage: "url(/assets/enterCardOnClick.png)" }}
+            ></motion.div>
+            <span className="text-white mt-2">Account {index + 1}</span>
+          </div>
+        ))}
       </div>
-      <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
-    </>
+    </div>
   )
 }
 
@@ -298,6 +247,7 @@ interface SummaryProps {
   setBalance: React.Dispatch<React.SetStateAction<number>>
   setShowSummary: React.Dispatch<React.SetStateAction<boolean>>
   response: string
+  setResponse: React.Dispatch<React.SetStateAction<string>>
 }
 
 function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, response, setResponse }) {
