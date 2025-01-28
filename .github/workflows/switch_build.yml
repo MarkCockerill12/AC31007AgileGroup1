@@ -10,12 +10,14 @@ jobs:
     steps:
       - name: checkout repo
         uses: actions/checkout@v4
+
       - name: Log in to the Container registry
         uses: docker/login-action@65b78e6e13532edd9afa3aa52ac7964289d1a9c1
         with:
           registry: ghcr.io
           username: victorbratov
           password: ${{ secrets.TOKEN }}
+
       - name: Build and push Docker image
         id: push
         uses: docker/build-push-action@f2a1d5e99d037542a71f64918e516c093c6f3fc4
@@ -23,6 +25,7 @@ jobs:
           context: ./switch
           push: true
           tags: ${{ github.sha }}
+
       - name: Deploy to DigitalOcean
         env:
           DO_SSH_PRIVATE_KEY: ${{ secrets.DO_SSH_PRIVATE_KEY }}
