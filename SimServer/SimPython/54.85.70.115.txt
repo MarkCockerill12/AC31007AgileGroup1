@@ -1,0 +1,18 @@
+54.196.182.125
+
+0 approve
+1 insufficient funds
+2 incorrect pin
+3 blocked card
+4 card doesn't exist
+5 card is expired
+6 general/system error
+
+
+0 login 
+1 withdraw
+2 deposit 
+3 show balance 
+
+
+
