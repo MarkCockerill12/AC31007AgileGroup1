@@ -26,14 +26,15 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary }: LoginBut
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-      <h2 className="text-white text-2xl mb-4 font-extrabold">{t.selectAccount}</h2>
-      <div className="flex space-x-4">
+      <h2 className="text-white text-4xl mb-12 font-extrabold">{t.selectAccount}</h2>
+      <div className="flex space-x-4 ">
         {accounts.map((account, index) => (
           <div
             key={index}
-            className="flex flex-col items-center justify-center cursor-pointer"
+            className="flex flex-col items-center justify-center cursor-pointer "
             onClick={() => handleLogin(account)}
           >
+          <div className="relative group flex flex-col items-center">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
@@ -51,16 +52,19 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary }: LoginBut
               whileTap={{ backgroundImage: "url(/assets/enterCardOnClick.png)" }}
             >
             </motion.div>
-            <div className="text-white m-2 p-2 mt-2">
+            <div className="text-white font-bold m-2 p-2 mt-2 duration-200 group-hover:scale-125">
               {t.account} {index + 1}
             </div>
           </div>
+            
+
+          </div>
         ))}
       </div>
-      <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
+      <div className=" mt-4 ml-4 flex items-center duration-200 hover:scale-125">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={() => window.location.reload()} />
         <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
+          className="px-4 py-2 text-white font-bold rounded transition-transform"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}
@@ -69,6 +73,7 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary }: LoginBut
           {t.goBack}
         </motion.button>
       </div>
+      <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
     </div>
   )
 }

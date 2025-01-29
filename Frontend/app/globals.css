@@ -26,3 +26,7 @@ button {
 button:hover {
   color: red; /* Adjust the hover text color as needed */
 }
+
+* {
+  font-family: 'Comic Sans MS', 'Comic Sans', cursive;
+}

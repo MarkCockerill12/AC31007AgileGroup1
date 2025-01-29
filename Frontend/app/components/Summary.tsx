@@ -77,10 +77,6 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
           <span>{CardNumber}</span>
         </div>
         <div className="flex justify-between text-black mb-2">
-          <span className="font-bold">{t.balance}:</span>
-          <span>£{balance}</span>
-        </div>
-        <div className="flex justify-between text-black mb-2">
           <span className="font-bold">{t.lastTransaction}:</span>
           {transactionAmount > 0 && (
             <span>
@@ -112,10 +108,10 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
           {t.balance}
         </button>
       </motion.div>
-      <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
+      <div className=" mt-4 ml-4 flex items-center duration-200 hover:scale-125">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
         <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
+          className="px-4 py-2 text-white font-bold rounded transition-transform"
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5 }}

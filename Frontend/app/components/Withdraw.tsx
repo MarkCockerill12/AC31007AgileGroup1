@@ -151,18 +151,18 @@ export function Withdraw({ CardNumber, PIN, balance, setBalance, setShowSummary,
           </div>
         )}
       </motion.div>
-      <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
-        <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
-        <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-110"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          onClick={handleGoBack}
-        >
-          {t.goBack}
-        </motion.button>
-      </div>
+      <div className=" mt-4 ml-4 flex items-center duration-200 hover:scale-125">
+              <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer " onClick={handleGoBack} />
+              <motion.button
+                className="px-4 py-2 text-white font-bold rounded transition-transform"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ duration: 0.5 }}
+                onClick={handleGoBack}
+              >
+                {t.goBack}
+              </motion.button>
+            </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
     </>
   );
