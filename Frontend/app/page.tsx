@@ -1,10 +1,11 @@
 "use client"
 
-import React, { useState } from "react"
-import { TranslationProvider } from "./contexts/TranslationContext"
+import { useState } from "react"
 import { Home } from "./components/Home"
 import { LoginButtons } from "./components/LoginButtons"
 import { Summary } from "./components/Summary"
+import { Balance } from "./components/Balance"
+import { TranslationProvider } from "./contexts/TranslationContext"
 
 export default function App() {
   const [showLoginButtons, setShowLoginButtons] = useState(false)
@@ -13,6 +14,7 @@ export default function App() {
   const [PIN, setPIN] = useState("")
   const [balance, setBalance] = useState(1000)
   const [response, setResponse] = useState("")
+  const [showBalance, setShowBalance] = useState(false)
 
   return (
     <TranslationProvider>
@@ -26,9 +28,12 @@ export default function App() {
             setShowSummary={setShowSummary}
             response={response}
             setResponse={setResponse}
+            setShowBalance={setShowBalance}
           />
         ) : showLoginButtons ? (
           <LoginButtons setCardNumber={setCardNumber} setPIN={setPIN} setShowSummary={setShowSummary} />
+        ) : showBalance ? (
+          <Balance balance={balance} setShowSummary={setShowSummary} CardNumber={CardNumber} />
         ) : (
           <Home onButtonClick={() => setShowLoginButtons(true)} />
         )}
@@ -36,4 +41,3 @@ export default function App() {
     </TranslationProvider>
   )
 }
-

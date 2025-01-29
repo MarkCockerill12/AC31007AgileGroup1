@@ -1,9 +1,9 @@
-import type React from "react"
 import { useState } from "react"
 import { motion } from "framer-motion"
 import { useTranslation } from "../contexts/TranslationContext"
 import { Withdraw } from "./Withdraw"
 import { Deposit } from "./Deposit"
+import { Balance } from "./Balance"
 
 interface SummaryProps {
   CardNumber: string
@@ -13,9 +13,10 @@ interface SummaryProps {
   setShowSummary: React.Dispatch<React.SetStateAction<boolean>>
   response: string
   setResponse: React.Dispatch<React.SetStateAction<string>>
+  setShowBalance: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, response, setResponse }: SummaryProps) {
+export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, response, setResponse, setShowBalance }: SummaryProps) {
   const [action, setAction] = useState(null)
   const { t } = useTranslation()
   const [transactionAmount, setTransactionAmount] = useState(0)
@@ -36,6 +37,11 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
         setResponse={setResponse}
       />
     )
+  } else if (action === "balance") {
+    return <Balance 
+      CardNumber={CardNumber}
+      balance={balance} 
+      setShowSummary={() => setAction(null)} />
   } else if (action === "deposit") {
     return (
       <Deposit
@@ -60,21 +66,21 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
   return (
     <>
       <motion.div
-        className="text-center"
+        className="text-center bg-white p-4 rounded shadow-lg"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-white text-2xl mb-4 font-extrabold">{t.accountSummary}</h2>
-        <div className="flex justify-between text-white mb-2">
+        <h2 className="text-black text-2xl mb-4 font-extrabold">{t.accountSummary}</h2>
+        <div className="flex justify-between text-black mb-2">
           <span className="font-bold">{t.accountNumber}:</span>
           <span>{CardNumber}</span>
         </div>
-        <div className="flex justify-between text-white mb-2">
+        <div className="flex justify-between text-black mb-2">
           <span className="font-bold">{t.balance}:</span>
           <span>£{balance}</span>
         </div>
-        <div className="flex justify-between text-white mb-2">
+        <div className="flex justify-between text-black mb-2">
           <span className="font-bold">{t.lastTransaction}:</span>
           {transactionAmount > 0 && (
             <span>
@@ -82,7 +88,7 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
             </span>
           )}
         </div>
-        <div className="flex justify-between text-white mb-2">
+        <div className="flex justify-between text-black mb-2">
           <span className="font-bold">{t.response}:</span>
           <span>{response}</span>
         </div>
@@ -99,6 +105,12 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
         >
           {t.deposit}
         </button>
+        <button
+          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
+          onClick={() => setAction("balance")}
+        >
+          {t.balance}
+        </button>
       </motion.div>
       <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
         <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
@@ -114,6 +126,5 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
       </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
     </>
-  )
+  );
 }
-

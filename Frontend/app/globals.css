@@ -16,3 +16,13 @@ html, body {
   font-size: 100px !important;
   color: white;
 }
+
+button {
+  background-color: transparent;
+  color: #ffffff; /* Adjust the text color as needed */
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+button:hover {
+  color: red; /* Adjust the hover text color as needed */
+}

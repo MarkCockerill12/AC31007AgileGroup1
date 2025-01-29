@@ -1,4 +1,3 @@
-import React from "react"
 import { motion } from "framer-motion"
 import { useTranslation } from "../contexts/TranslationContext"
 
@@ -38,7 +37,7 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary }: LoginBut
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.5, delay: 0.6 }}
+              transition={{ duration: 1 }}
               style={{
                 backgroundImage: "url(/assets/enterCard.png)",
                 backgroundSize: "contain",
@@ -50,14 +49,26 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary }: LoginBut
               }}
               whileHover={{ backgroundImage: "url(/assets/enterCardHover.png)" }}
               whileTap={{ backgroundImage: "url(/assets/enterCardOnClick.png)" }}
-            ></motion.div>
-            <span className="text-white mt-2">
+            >
+            </motion.div>
+            <div className="text-white m-2 p-2 mt-2">
               {t.account} {index + 1}
-            </span>
+            </div>
           </div>
         ))}
+      </div>
+      <div className="fixed top-0 left-0 mt-4 ml-4 flex items-center">
+        <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={() => window.location.reload()} />
+        <motion.button
+          className="px-4 py-2 text-white font-bold rounded transition-transform duration-200 hover:scale-125"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          onClick={() => window.location.reload()}
+        >
+          {t.goBack}
+        </motion.button>
       </div>
     </div>
   )
 }
-
