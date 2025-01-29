@@ -19,7 +19,10 @@
     "withdrawCustomAmount": "Withdraw Custom Amount",
     "depositCustomAmount": "Deposit Custom Amount",
     "close": "Close",
-    "invalidTransaction": "Invalid Transaction"
+    "invalidTransaction": "Invalid Transaction",
+    "selectAccount": "Select Account",
+    "account": "Account"
+
   },
   "es": {
     "title": "Cajero NCR",
