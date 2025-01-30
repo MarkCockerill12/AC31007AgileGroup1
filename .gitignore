@@ -3,6 +3,7 @@ node_modules
 .next
 .env*.local
 switch/*-logs/
+switch/main
 Certs
 dist
 switch/logs/
