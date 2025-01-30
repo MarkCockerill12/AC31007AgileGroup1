@@ -189,7 +189,7 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 func main() {
 	// Define the address and port to listen on
 
-	fmt.Println(os.Getenv("TEST"))
+	fmt.Println("TEST", os.Getenv("TEST"))
 	if os.Getenv("TEST") == "true" {
 		fmt.Println("INFO: Running in test mode")
 		return
