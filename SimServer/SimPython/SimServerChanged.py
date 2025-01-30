@@ -314,14 +314,18 @@ def start_server():
 
 
     check_logfile()
+    context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+    context.load_cert_chain(certfile="server.crt", keyfile="server.key")
+
     server_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     server_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     server_socket.bind((tcp_host, tcp_port))
     server_socket.listen(5)
     try:
         while True:
-            incoming_socket, incoming_address = server_socket.accept()
-            handle_switch_connection(incoming_socket, incoming_address)
+            new_socket, incoming_address = server_socket.accept()
+            secure_socket = context.wrap_socket(new_socket, server_side=True)
+            handle_switch_connection(secure_socket, incoming_address)
     except KeyboardInterrupt:
         print("")
     finally:
