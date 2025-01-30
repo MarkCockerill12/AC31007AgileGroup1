@@ -49,13 +49,15 @@ ipcMain.handle('send-transaction', (_, transactionData) => {
   return new Promise((resolve, reject) => {
     const options = {
       host: 'localhost',
-      port: 8000,
+      port: 8080,
       rejectUnauthorized: false, // Only for development
       ca: [fs.readFileSync(path.join(__dirname, 'certs/server-cert.pem'))]
     }
 
+
     const client = tls.connect(options, () => {
       console.log("main: Secure connection established")
+
       const message = JSON.stringify(transactionData)
       console.log("main: Sending message to server", message)
       client.write(message)

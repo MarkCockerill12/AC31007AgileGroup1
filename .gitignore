@@ -2,6 +2,10 @@
 node_modules
 .next
 .env*.local
-switch/*-logs/
+
 dist
+switch/logs/
+Frontend/forge.config.js
+Frontend/node_modules
+Frontend/out
 
