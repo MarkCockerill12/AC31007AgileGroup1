@@ -2,6 +2,8 @@ package main
 
 import (
 	"bufio"
+	"crypto/tls"
+	"crypto/x509"
 	"encoding/json"
 	"fmt"
 	"net"
@@ -25,17 +27,35 @@ type Response struct {
 	Message      string `json:"msg"`
 }
 
-var networksAddresses = map[string]string{
-	"visa":       "52.90.150.134:31007",
-	"mastercard": "52.90.150.134:31007",
-	"amex":       "52.90.150.134:31007", //check this to make sure its correct
-}
+
+var networksAddresses map[string]string
+
 
 var (
-	transactionLogger = InitLogger[Response]("transaction-logs", "transaction-log", ResponseToString)
-	requestLogger     = InitLogger[Request]("request-logs", "request-log", RequestToString)
-	errorLogger       = InitLogger[error]("error-logs", "error-log", func(err error) string { return err.Error() })
+	transactionLogger = InitLogger("transaction-logs", "transaction-log", ResponseToString)
+	requestLogger     = InitLogger("request-logs", "request-log", RequestToString)
+	errorLogger       = InitLogger("error-logs", "error-log", func(err error) string { return err.Error() })
 )
+
+func init() {
+	if os.Getenv("TEST") == "true" {
+		return
+	}
+
+	addressesJSON, ok := os.LookupEnv("NETWORKS_ADDRESSES")
+	if !ok {
+		err := fmt.Errorf("ERROR: NETWORKS_ADDRESSES environment variable not set")
+		errorLogger.Channel <- err
+		os.Exit(1)
+	}
+
+	err := json.Unmarshal([]byte(addressesJSON), &networksAddresses)
+	if err != nil {
+		error := fmt.Errorf("ERROR: failed to parse NETWORKS_ADDRESSES: %w", err)
+		errorLogger.Channel <- error
+		os.Exit(1)
+	}
+}
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close() // Ensure the connection is closed when the function exits
@@ -59,7 +79,7 @@ func handleConnection(conn net.Conn) {
 			fmt.Printf("Error processing request: %s\n", err)
 			error := fmt.Errorf("ERROR: failed to process request form client (address: %s): %w", conn.RemoteAddr().String(), err)
 			errorLogger.Channel <- error
-			conn.Write([]byte(fmt.Sprintf("Error: %s", err)))
+			fmt.Fprintf(conn, "Error: %s", err)
 			continue
 		}
 
@@ -135,8 +155,22 @@ func forwardRequest(request []byte) ([]byte, error) {
 }
 
 func SendTCPMessage(serverAddr string, message []byte) (string, error) {
-	// Establish a TCP connection
-	conn, err := net.Dial("tcp", serverAddr)
+	// Establish a TLS/TCP connection
+
+	certFile, err := os.ReadFile("simulation-cert.pem") // change to be the correct certificate for the simulation
+	if err != nil {
+		return "", fmt.Errorf("failed to read server certificate: %w", err)
+	}
+	certPool := x509.NewCertPool()
+	if ok := certPool.AppendCertsFromPEM(certFile); !ok {
+		return "", fmt.Errorf("unable to parse server certificate")
+	}
+
+	conf := &tls.Config{
+		RootCAs: certPool,
+	}
+
+	conn, err := tls.Dial("tcp", serverAddr, conf)
 	if err != nil {
 		return "", fmt.Errorf("failed to connect to server: %w", err)
 	}
@@ -160,6 +194,13 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
+
+	fmt.Println("TEST", os.Getenv("TEST"))
+	if os.Getenv("TEST") == "true" {
+		fmt.Println("INFO: Running in test mode")
+		return
+	}
+
 	port, ok := os.LookupEnv("SWITCH_PORT")
 	if !ok {
 		err := fmt.Errorf("ERROR: SWITCH_PORT environment variable not set")
@@ -167,7 +208,16 @@ func main() {
 		os.Exit(1)
 	}
 	address := fmt.Sprintf("0.0.0.0:%s", port)
-	listener, err := net.Listen("tcp", address)
+	cer, err := tls.LoadX509KeyPair("Certs/server-cert.pem", "Certs/server-key.pem") // server.crt and server.key are the certificate files. These must contain PEM encoded data.
+	if err != nil {
+		error := fmt.Errorf("ERROR: failed to load certificates: %w", err)
+		fmt.Println(error)
+		errorLogger.Channel <- error
+		os.Exit(1)
+	}
+
+	config := &tls.Config{Certificates: []tls.Certificate{cer}} //
+	listener, err := tls.Listen("tcp", address, config)
 	if err != nil {
 		error := fmt.Errorf("ERROR: failed to start server: %w", err)
 		fmt.Println(error)
