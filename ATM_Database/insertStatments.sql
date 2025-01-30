@@ -1,17 +1,17 @@
 /*INSERT INTO cardHolderDetails (Surname, Forename, Address, PhoneNumber, Gender, Postcode)
 VALUES ('Doe', 'John', '123 Main St', '555-123-4567', 'Male', 'AB12CD');
-
+ 
 INSERT INTO accountDetails (AccountAmount, HolderID)
-VALUES (1000.50, 1); 
-
+VALUES (1000.50, 1);
+ 
 INSERT INTO cardDetails (PAN, PIN, CVV, Expires, HolderID, Bank, Network)
 VALUES (123456789123456, 1234, 567, '2025-12-31', 1, 'Bank of Example', 'VISA');
-
+ 
 INSERT INTO ATM_Details (Address, Postcode, ModelNumber)
 VALUES ('456 Elm St', 'CD34EF', 'ATM-Model-XYZ');
-*/ 
-
-
+*/
+ 
+ 
 -- Insert records into cardHolderDetails
 INSERT INTO userAccount (Surname, Forename, Address, PhoneNumber, Gender, Postcode, Balance, Blocked, Currency)
 VALUES 
@@ -25,23 +25,22 @@ VALUES
 ('Moore', 'Laura', '606 Redwood St', '555-666-7777', 'Female', 'QR45ST', 4500.30, 1, 'Pounds'),
 ('Taylor', 'James', '707 Willow Dr', '555-777-8888', 'Male', 'ST56UV', 230.15, 1, 'Pounds'),
 ('Anderson', 'Sophia', '808 Ash Ln', '555-888-9999', 'Female', 'UV67WX', 9100.15, 1, 'Pounds');
-
-
-
+ 
+ 
 -- Insert records into cardDetails
 INSERT INTO cardDetails (PAN, PIN, CVV, Expires, HolderID, Bank, Network)
 VALUES 
-(123456789123456, 1234, 567, '2025-12-31', 1, 'Bank of Example', 'VISA'),
-(234567890123456, 2345, 678, '2026-01-31', 2, 'Global Bank', 'MasterCard'),
-(345678901234567, 3456, 789, '2027-02-28', 3, 'First National Bank', 'VISA'),
-(456789012345678, 4567, 890, '2028-03-31', 4, 'Secure Trust Bank', 'VISA'),
-(567890123456789, 5678, 901, '2029-04-30', 5, 'Union Bank', 'MasterCard'),
-(678901234567890, 6789, 012, '2030-05-31', 6, 'Community Savings', 'VISA'),
-(789012345678901, 7890, 123, '2031-06-30', 7, 'Metro Bank', 'VISA'),
-(890123456789012, 8901, 234, '2032-07-31', 8, 'Premier Financial', 'MasterCard'),
-(901234567890123, 9012, 345, '2033-08-31', 9, 'East Coast Bank', 'VISA'),
-(123456789012345, 1234, 456, '2024-09-30', 10, 'Westfield Bank', 'VISA');
-
+(5555555555554444, 1234, 567, '2025-12-31', 1, 'Bank of Example', 'MasterCard'),
+(5555555555555555, 2345, 678, '2026-01-31', 2, 'Global Bank', 'MasterCard'),
+(5555555555556666, 3456, 789, '2027-02-28', 3, 'First National Bank', 'MasterCard'),
+(5555555555557777, 4567, 890, '2028-03-31', 4, 'Secure Trust Bank', 'MasterCard'),
+(5555555555558888, 5678, 901, '2029-04-30', 5, 'Union Bank', 'MasterCard'),
+(4111111111111111, 6789, 112, '2030-05-31', 6, 'Community Savings', 'VISA'),
+(4111111111112222, 7890, 123, '2031-06-30', 7, 'Metro Bank', 'VISA'),
+(378282246310005, 8901, 234, '2032-07-31', 8, 'Premier Financial', 'AMX'),
+(371449635398431, 9012, 345, '2033-08-31', 9, 'East Coast Bank', 'AMX'),
+(378734193589014, 1234, 456, '2024-09-30', 10, 'Westfield Bank', 'AMX');
+ 
 -- Insert records into ATM_Details
 INSERT INTO ATM_Details (Address, Postcode, ModelNumber)
 VALUES 
