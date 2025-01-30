@@ -27,7 +27,9 @@ type Response struct {
 	Message      string `json:"msg"`
 }
 
+
 var networksAddresses map[string]string
+
 
 var (
 	transactionLogger = InitLogger("transaction-logs", "transaction-log", ResponseToString)

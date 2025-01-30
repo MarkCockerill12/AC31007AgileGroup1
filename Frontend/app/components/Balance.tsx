@@ -1,19 +1,44 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../contexts/TranslationContext';
+import { handleSendTransaction } from '../transactionUtils';
 
 interface BalanceProps {
-  CardNumber: string;
+  CardNumber: number;
+  PIN: number;
   balance: number;
+  setBalance: (balance: number) => void;
   setShowSummary: (show: boolean) => void;
+  setResponse: (response: string) => void;
 }
 
-export function Balance({ CardNumber, balance, setShowSummary }: BalanceProps) {
+export function Balance({ CardNumber, PIN, balance, setBalance, setShowSummary, setResponse }: BalanceProps) {
   const { t } = useTranslation();
 
   const handleGoBack = () => {
-    setShowSummary(true);
+    setShowSummary(false);
   };
+
+  const handleBalance = async () => {
+    try {
+      const response = await handleSendTransaction(0, 0, CardNumber, PIN, setResponse);
+      if (response.RespType === 0) {
+        const newBalance = Number.parseFloat(response.msg);
+        setBalance(newBalance);
+      }
+    } catch (error) {
+      console.error("Balance request failed:", error);
+      setResponse("Failed to fetch balance");
+    }
+  };
+
+  // Call handleBalance when component mounts
+  useEffect(() => {
+    handleBalance();
+  }, []); // Empty dependency array means this runs once on mount
+
+  const displayBalance = balance.toFixed(2);
+
 
   return (
     <>
@@ -24,10 +49,7 @@ export function Balance({ CardNumber, balance, setShowSummary }: BalanceProps) {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-black text-2xl mb-4 font-extrabold">{t.balance}</h2>
-        <div className="flex justify-between text-black mb-2">
-          <span className="font-bold">{t.accountNumber}:</span>
-          <span>{CardNumber}</span>
-        </div>
+
         <div className="flex justify-between text-black mb-2">
           <span className="font-bold">{t.balance}:</span>
           <span>£{balance}</span>

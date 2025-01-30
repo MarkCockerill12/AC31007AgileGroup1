@@ -23,7 +23,13 @@
 
     
     "selectAccount": "Select Account",
-    "account": "Account"
+    "account": "Account",
+    "enterPIN": "Enter PIN",
+    "cancel": "Cancel",
+    "login": "Login",
+    "withdrawDescription": "Select the amount you would like to withdraw",
+    "depositDescription": "Select the amount you would like to deposit",
+    "balanceDescription": "View your account balance"
 
   },
   "es": {

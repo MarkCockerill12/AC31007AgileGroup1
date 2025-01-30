@@ -48,7 +48,7 @@ app.on("window-all-closed", () => {
 ipcMain.handle('send-transaction', (_, transactionData) => {
   return new Promise((resolve, reject) => {
     const options = {
-      host: 'localhost',
+      host: '167.99.83.219',
       port: 8080,
       rejectUnauthorized: false, // Only for development
       ca: [fs.readFileSync(path.join(__dirname, 'certs/server-cert.pem'))]
