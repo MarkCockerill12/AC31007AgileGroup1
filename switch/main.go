@@ -67,8 +67,6 @@ func handleConnection(conn net.Conn) {
 		bytesRead, err := conn.Read(buffer)
 		if err != nil {
 			fmt.Printf("Connection closed by %s\n", conn.RemoteAddr().String())
-			error := fmt.Errorf("ERROR: client(address: %s) closed connection: %w", conn.RemoteAddr().String(), err)
-			errorLogger.Channel <- error
 			return
 		}
 
@@ -157,7 +155,7 @@ func forwardRequest(request []byte) ([]byte, error) {
 func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 	// Establish a TLS/TCP connection
 
-	certFile, err := os.ReadFile("simulation-cert.pem") // change to be the correct certificate for the simulation
+	certFile, err := os.ReadFile("Certs/simulation-cert.pem") // change to be the correct certificate for the simulation
 	if err != nil {
 		return "", fmt.Errorf("failed to read server certificate: %w", err)
 	}
@@ -167,7 +165,8 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 	}
 
 	conf := &tls.Config{
-		RootCAs: certPool,
+		RootCAs:            certPool,
+		InsecureSkipVerify: true,
 	}
 
 	conn, err := tls.Dial("tcp", serverAddr, conf)

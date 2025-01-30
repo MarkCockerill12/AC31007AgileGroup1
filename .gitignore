@@ -14,4 +14,5 @@ Frontend/out
 *.key
 *.pem
 *.crt
+switch/main
 
