@@ -8,6 +8,9 @@ on:
     branches:
       - main # Triggers on pull requests targeting the main branch
 
+env:
+  TEST: true
+
 jobs:
   test:
     name: Run Tests
@@ -47,4 +50,4 @@ jobs:
       - name: Run Tests
         run: |
           cd switch
-          go test ./... -v
+          go test -v

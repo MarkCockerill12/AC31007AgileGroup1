@@ -27,16 +27,33 @@ type Response struct {
 	Message      string `json:"msg"`
 }
 
-var networksAddresses = map[string]string{
-	"visa":       "54.85.70.115:31007",
-	"mastercard": "54.85.70.115:31007",
-}
+var networksAddresses map[string]string
 
 var (
-	transactionLogger = InitLogger[Response]("transaction-logs", "transaction-log", ResponseToString)
-	requestLogger     = InitLogger[Request]("request-logs", "request-log", RequestToString)
-	errorLogger       = InitLogger[error]("error-logs", "error-log", func(err error) string { return err.Error() })
+	transactionLogger = InitLogger("transaction-logs", "transaction-log", ResponseToString)
+	requestLogger     = InitLogger("request-logs", "request-log", RequestToString)
+	errorLogger       = InitLogger("error-logs", "error-log", func(err error) string { return err.Error() })
 )
+
+func init() {
+	if os.Getenv("TEST") == "true" {
+		return
+	}
+
+	addressesJSON, ok := os.LookupEnv("NETWORKS_ADDRESSES")
+	if !ok {
+		err := fmt.Errorf("ERROR: NETWORKS_ADDRESSES environment variable not set")
+		errorLogger.Channel <- err
+		os.Exit(1)
+	}
+
+	err := json.Unmarshal([]byte(addressesJSON), &networksAddresses)
+	if err != nil {
+		error := fmt.Errorf("ERROR: failed to parse NETWORKS_ADDRESSES: %w", err)
+		errorLogger.Channel <- error
+		os.Exit(1)
+	}
+}
 
 func handleConnection(conn net.Conn) {
 	defer conn.Close() // Ensure the connection is closed when the function exits
@@ -60,7 +77,7 @@ func handleConnection(conn net.Conn) {
 			fmt.Printf("Error processing request: %s\n", err)
 			error := fmt.Errorf("ERROR: failed to process request form client (address: %s): %w", conn.RemoteAddr().String(), err)
 			errorLogger.Channel <- error
-			conn.Write([]byte(fmt.Sprintf("Error: %s", err)))
+			fmt.Fprintf(conn, "Error: %s", err)
 			continue
 		}
 
@@ -175,6 +192,13 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
+
+	fmt.Println("TEST", os.Getenv("TEST"))
+	if os.Getenv("TEST") == "true" {
+		fmt.Println("INFO: Running in test mode")
+		return
+	}
+
 	port, ok := os.LookupEnv("SWITCH_PORT")
 	if !ok {
 		err := fmt.Errorf("ERROR: SWITCH_PORT environment variable not set")
@@ -182,8 +206,7 @@ func main() {
 		os.Exit(1)
 	}
 	address := fmt.Sprintf("0.0.0.0:%s", port)
-	cer, err := tls.LoadX509KeyPair("Certs/server-cert.pem", "Certs/server-key.pem") //server.crt and server.key are the certificate files. These must contain PEM encoded data.
-
+	cer, err := tls.LoadX509KeyPair("Certs/server-cert.pem", "Certs/server-key.pem") // server.crt and server.key are the certificate files. These must contain PEM encoded data.
 	if err != nil {
 		error := fmt.Errorf("ERROR: failed to load certificates: %w", err)
 		fmt.Println(error)
