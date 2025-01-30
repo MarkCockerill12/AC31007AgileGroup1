@@ -155,7 +155,7 @@ func forwardRequest(request []byte) ([]byte, error) {
 func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 	// Establish a TLS/TCP connection
 
-	certFile, err := os.ReadFile("simulation-cert.pem") // change to be the correct certificate for the simulation
+	certFile, err := os.ReadFile("Certs/simulation-cert.pem") // change to be the correct certificate for the simulation
 	if err != nil {
 		return "", fmt.Errorf("failed to read server certificate: %w", err)
 	}
