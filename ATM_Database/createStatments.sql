@@ -20,7 +20,7 @@ CREATE TABLE cardDetails (
     Expires DATE,
     HolderID INT,
     Bank VARCHAR(45),
-    Network ENUM('VISA', 'MasterCard'), 
+    Network ENUM('VISA', 'MasterCard', 'AMX'), 
     FOREIGN KEY (HolderID) REFERENCES userAccount(HolderID)
 );
 
