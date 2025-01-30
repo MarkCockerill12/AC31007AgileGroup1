@@ -5,40 +5,43 @@ import os
 from datetime import datetime
 import socket
 from decimal import Decimal
+import ssl
 
-#Config
+# Config
 tcp_host = "0.0.0.0"
 tcp_port = 31007
 buffer_size = 1024
 log_file_name = "/var/www/html/logFile.txt"
 
-#DB Config
+# DB Config
 db_host = "localhost"
 user = "user"
 password = "AC31007"
 
 
 mydb = pymysql.connect(
-    host = 'localhost',
-    user = 'user',
-    password = 'AC31007',
-    database = 'atm_database',
-    ssl_disabled = True
+    host="localhost",
+    user="user",
+    password="AC31007",
+    database="atm_database",
+    ssl_disabled=True,
 )
 
-#checks to see if the card and pin passed in with the json is correct to the data bases entity
+
+# checks to see if the card and pin passed in with the json is correct to the data bases entity
 def CorrectPIN(PAN, PIN):
     mycursor = mydb.cursor()
     mycursor.execute("call PAN_find_PIN(%s)", (PAN,))
     selectGET = mycursor.fetchall()
-    print(selectGET[0][0], " " , PIN)
+    print(selectGET[0][0], " ", PIN)
 
     if selectGET[0][0] == PIN:
         return True
     else:
         return False
 
-#checks to see if the card has enough money to make a withdraw
+
+# checks to see if the card has enough money to make a withdraw
 def CorrectFunds(PAN, Amount):
     mycursor = mydb.cursor()
     mycursor.execute("call getBalance(%s)", (PAN,))
@@ -50,7 +53,8 @@ def CorrectFunds(PAN, Amount):
     else:
         return False
 
-#checks to see if the card is blocked
+
+# checks to see if the card is blocked
 def IsCardBlocked(PAN):
     mycursor = mydb.cursor()
     mycursor.execute("call CheckIfAccountBlocked(%s)", (PAN,))
@@ -61,7 +65,8 @@ def IsCardBlocked(PAN):
     else:
         return False
 
-#checks to see if the card even exists
+
+# checks to see if the card even exists
 def DoesCardExist(PAN):
     mycursor = mydb.cursor()
     mycursor.execute("SELECT PAN FROM cardDetails WHERE PAN = %s", (PAN,))
@@ -73,22 +78,26 @@ def DoesCardExist(PAN):
         True
 
 
-#checks to see if the card has infront of behind its expiry date
-def HasCardExpired(PAN , time):
+# checks to see if the card has infront of behind its expiry date
+def HasCardExpired(PAN, time):
     mycursor = mydb.cursor()
     mycursor.execute("call GetCardExpiryByPAN(%s)", (PAN,))
     selectGET = mycursor.fetchall()
 
     # Assuming selectGET[0][0] is a datetime.date or datetime type from DB
-    card_expiry_date = selectGET[0][0]  #from the DB
+    card_expiry_date = selectGET[0][0]  # from the DB
     print(f"Card expiry from DB: {card_expiry_date}")
     print(f"Time passed to the function: {time}")
 
     # are the variables in the right format
     if isinstance(time, str):
-        time_datetime = datetime.strptime(time, "%Y-%m-%d")  # Adjust to match your time format
+        time_datetime = datetime.strptime(
+            time, "%Y-%m-%d"
+        )  # Adjust to match your time format
     else:
-        time_datetime = time  # Assuming time is already a datetime.date or datetime object
+        time_datetime = (
+            time  # Assuming time is already a datetime.date or datetime object
+        )
 
     if card_expiry_date < time_datetime:
         return True
@@ -96,9 +105,7 @@ def HasCardExpired(PAN , time):
         return False
 
 
-
 def makeWithdrawl(PAN, amount):
-
     mycursor = mydb.cursor()
     mycursor.execute("call getBalance(%s)", (PAN,))
     selectGET = mycursor.fetchall()
@@ -110,10 +117,8 @@ def makeWithdrawl(PAN, amount):
     mydb.commit()
 
 
-
-#this checks if the card is valid in 3 ways, login pin and if the card is blocked or expired
-def ValidCard(PAN , PIN , Time):
-
+# this checks if the card is valid in 3 ways, login pin and if the card is blocked or expired
+def ValidCard(PAN, PIN, Time):
     CheckPIN = CorrectPIN(PAN, PIN)
     print(CheckPIN)
 
@@ -122,16 +127,14 @@ def ValidCard(PAN , PIN , Time):
     else:
         print("pin is not valid")
 
-
-    #checking if the card is blocked or not
+    # checking if the card is blocked or not
     checkBlocked = IsCardBlocked(PAN)
     if checkBlocked == True:
         print("your card is blocked")
     else:
         print("you card is not blocked ;)")
 
-
-    #checking if the card is expired or not
+    # checking if the card is expired or not
     checkEX = HasCardExpired(PAN, Time)
     if checkEX == False:
         print("your card is in date")
@@ -146,47 +149,38 @@ def ValidCard(PAN , PIN , Time):
         return 3
     elif checkEX is True:
         return 5
-    
-
 
 
 def handle_switch_connection(incoming_socket, incoming_address):
     request = None
     try:
         data = incoming_socket.recv(buffer_size).decode("utf-8")
-        #processing jason file
+        # processing jason file
         try:
             request = json.loads(data)
-            with open (log_file_name, "a", encoding="utf-8") as log_file:
-                log_file.write(str(request)+"\n")
+            with open(log_file_name, "a", encoding="utf-8") as log_file:
+                log_file.write(str(request) + "\n")
             print(request)
         # if jason is dodgy excemption
         except json.JSONDecodeError:
-            response = {
-                "TnxID": "null",
-                "RespType": 6,
-                "msg": "JSON format error"
-            }
+            response = {"TnxID": "null", "RespType": 6, "msg": "JSON format error"}
             incoming_socket.send(json.dumps(response).encode("utf-8"))
-            with open (log_file_name, "a", encoding="utf-8") as log_file:
-                log_file.write(str(response)+"\n")
+            with open(log_file_name, "a", encoding="utf-8") as log_file:
+                log_file.write(str(response) + "\n")
             return
 
-
-        #HERE maybe take this out? dont know the use yet
+        # HERE maybe take this out? dont know the use yet
         cool = '{"TnxID": "12345", "TnxTime": "2025-01-28", "TnxKind": "withdrawal", "TnxAmount": 100, "CardNumber": "123456789", "PIN": "1234"}'
 
-
-        #converts data from json to correct formats to be used
+        # converts data from json to correct formats to be used
         ID = request.get("TnxID").strip()
-        Time = request.get("TnxTime" )
+        Time = request.get("TnxTime")
         Time = datetime.strptime(Time, "%Y-%m-%d %H:%M:%S.%f")
         Time = Time.date()
-        Kind = int(request.get("TnxKind" ))
-        Amount = Decimal(request.get("TnxAmount" ))
-        PAN = int(request.get("CardNumber" ))
-        PIN = int(request.get("PIN" ))
-
+        Kind = int(request.get("TnxKind"))
+        Amount = Decimal(request.get("TnxAmount"))
+        PAN = int(request.get("CardNumber"))
+        PIN = int(request.get("PIN"))
 
         ##displaying data for debugging
         print("\n")
@@ -200,14 +194,12 @@ def handle_switch_connection(incoming_socket, incoming_address):
         print("\n")
         print("\n")
 
-
         respType = 0
         respMessage = ""
 
-
-        #from here to next comment
-        #this code verifys the card and will alwase happen
-        isCardValid = ValidCard(PAN , PIN , Time)
+        # from here to next comment
+        # this code verifys the card and will alwase happen
+        isCardValid = ValidCard(PAN, PIN, Time)
 
         if isCardValid is True:
             respMessage = "Login Successful"
@@ -216,12 +208,9 @@ def handle_switch_connection(incoming_socket, incoming_address):
             respMessage = "Login Unsuccessful"
             respType = isCardValid
 
-        
-
-        #make a withdrawl from the account
+        # make a withdrawl from the account
         if Kind == 1 and isCardValid == True:
-
-            #checking if the card has enough money for the withdrawl
+            # checking if the card has enough money for the withdrawl
             checkBalance = CorrectFunds(PAN, Amount)
             if checkBalance == False:
                 print("you are withdrawing to much")
@@ -229,40 +218,30 @@ def handle_switch_connection(incoming_socket, incoming_address):
                 respType = 1
             else:
                 print("you can withdraw this")
-                makeWithdrawl(PAN , Amount)
+                makeWithdrawl(PAN, Amount)
                 respMessage = "Withdraw Successful"
                 respType = 0
 
-        #get balance to be displayed
+        # get balance to be displayed
         if Kind == 3 and isCardValid == True:
             mycursor = mydb.cursor()
             mycursor.execute("call getBalance(%s)", (PAN,))
             selectGET = mycursor.fetchall()
 
-            respMessage = "Your Current Balance is " +  str(selectGET[0][0])
+            respMessage = "Your Current Balance is " + str(selectGET[0][0])
             respType = 0
-        
 
         # deposit cash choice
         if Kind == 2 and isCardValid == True:
-            
             Increase = 0 - Amount
-            makeWithdrawl(PAN , Increase)
+            makeWithdrawl(PAN, Increase)
 
             mycursor = mydb.cursor()
             mycursor.execute("call getBalance(%s)", (PAN,))
             selectGET = mycursor.fetchall()
-            
+
             respMessage = "Your Balance is Now " + str(selectGET[0][0])
             respType = 0
-
-
-
-
-
-
-
-
 
         mycursor = mydb.cursor()
         mycursor.execute(" SELECT * FROM userAccount")
@@ -271,25 +250,20 @@ def handle_switch_connection(incoming_socket, incoming_address):
         for y in selectGET:
             print(y)
 
-
-
-
-
-
-
-
-
         response = {
-                "TnxID": request.get("TnxID", ),
-                "RespType": respType,
-                "msg": respMessage
-            }
+            "TnxID": request.get(
+                "TnxID",
+            ),
+            "RespType": respType,
+            "msg": respMessage,
+        }
         print(response)
-        incoming_socket.send((json.dumps(response)+"\n").encode("utf-8"))
-        with open (log_file_name, "a", encoding="utf-8") as log_file:
-            log_file.write(str(response)+"\n")
+        incoming_socket.send((json.dumps(response) + "\n").encode("utf-8"))
+        with open(log_file_name, "a", encoding="utf-8") as log_file:
+            log_file.write(str(response) + "\n")
     finally:
         incoming_socket.close()
+
 
 def check_logfile():
     print("Current working directory:", os.getcwd())
@@ -304,14 +278,12 @@ def check_logfile():
 
 
 def start_server():
-
     mycursor = mydb.cursor()
     mycursor.execute(" SELECT * FROM userAccount")
     selectGET = mycursor.fetchall()
 
     for y in selectGET:
         print(y)
-
 
     check_logfile()
     context = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
@@ -331,13 +303,6 @@ def start_server():
     finally:
         server_socket.close()
 
-    
-
 
 if __name__ == "__main__":
-    
-
     start_server()
-
-
-
