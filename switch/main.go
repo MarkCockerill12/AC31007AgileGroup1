@@ -188,6 +188,13 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
+
+	fmt.Println(os.Getenv("TEST"))
+	if os.Getenv("TEST") == "true" {
+		fmt.Println("INFO: Running in test mode")
+		return
+	}
+
 	port, ok := os.LookupEnv("SWITCH_PORT")
 	if !ok {
 		err := fmt.Errorf("ERROR: SWITCH_PORT environment variable not set")
