@@ -36,6 +36,10 @@ var (
 )
 
 func init() {
+	if os.Getenv("TEST") == "true" {
+		return
+	}
+
 	addressesJSON, ok := os.LookupEnv("NETWORKS_ADDRESSES")
 	if !ok {
 		err := fmt.Errorf("ERROR: NETWORKS_ADDRESSES environment variable not set")
