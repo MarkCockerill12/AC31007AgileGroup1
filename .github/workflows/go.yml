@@ -8,13 +8,13 @@ on:
     branches:
       - main # Triggers on pull requests targeting the main branch
 
+env:
+  TEST: true
+
 jobs:
   test:
     name: Run Tests
     runs-on: ubuntu-latest
-
-    env:
-      TEST: true
 
     steps:
       # Checkout the code
@@ -50,4 +50,4 @@ jobs:
       - name: Run Tests
         run: |
           cd switch
-          go test ./... -v
+          go test -v
