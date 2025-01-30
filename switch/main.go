@@ -28,8 +28,8 @@ type Response struct {
 }
 
 var networksAddresses = map[string]string{
-	"visa":       "54.164.156.45:31007",
-	"mastercard": "54.164.156.45:31007",
+	"visa":       "54.85.70.115:31007",
+	"mastercard": "54.85.70.115:31007",
 }
 
 var (
@@ -175,7 +175,13 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 
 func main() {
 	// Define the address and port to listen on
-	address := "0.0.0.0:8080"
+	port, ok := os.LookupEnv("SWITCH_PORT")
+	if !ok {
+		err := fmt.Errorf("ERROR: SWITCH_PORT environment variable not set")
+		errorLogger.Channel <- err
+		os.Exit(1)
+	}
+	address := fmt.Sprintf("0.0.0.0:%s", port)
 	cer, err := tls.LoadX509KeyPair("Certs/server-cert.pem", "Certs/server-key.pem") //server.crt and server.key are the certificate files. These must contain PEM encoded data.
 
 	if err != nil {
@@ -211,7 +217,6 @@ func main() {
 		conn, err := listener.Accept()
 		if err != nil {
 			error := fmt.Errorf("ERROR: failed to accept connection: %w", err)
-			fmt.Println(error)
 			errorLogger.Channel <- error
 			continue
 		}

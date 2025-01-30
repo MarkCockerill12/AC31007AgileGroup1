@@ -3,7 +3,7 @@ DELIMITER $$
 CREATE PROCEDURE PAN_find_PIN(IN inPAN BIGINT)
 BEGIN
     SELECT PIN
-    FROM carddetails
+    FROM cardDetails
     WHERE PAN = inPAN;
 END$$
 

@@ -4,4 +4,8 @@ node_modules
 .env*.local
 switch/*-logs/
 Certs
+switch/logs/
+Frontend/forge.config.js
+Frontend/node_modules
+Frontend/out
 
