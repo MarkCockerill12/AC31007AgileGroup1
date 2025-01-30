@@ -2,7 +2,8 @@
 node_modules
 .next
 .env*.local
-
+switch/*-logs/
+Certs
 dist
 switch/logs/
 Frontend/forge.config.js
