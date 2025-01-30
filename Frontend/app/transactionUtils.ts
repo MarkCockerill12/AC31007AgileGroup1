@@ -24,48 +24,48 @@ export const handleSendTransaction = async (
     TnxID,
     TnxTime,
     TnxKind: transactionKind,
-    TnxAmount: amount,
+    TnxAmount: Number.parseFloat(amount.toString()), // Ensure amount is a number
     CardNumber,
-    PIN,
+    PIN: Number.parseInt(PIN.toString()), // Ensure PIN is an integer
   }
 
   try {
-    console.log("Sending transaction data:", transactionData)
     const res = await window.electron.sendTransaction(transactionData)
-    console.log("Received response:", res)
     const parsedResponse: ErrorResponse = JSON.parse(res)
 
-    let errorMessage = parsedResponse.msg
+    let errorMessage
     switch (parsedResponse.RespType) {
       case 0:
-        errorMessage = "Transaction approved: " + errorMessage
+        errorMessage = "Transaction approved"
         break
       case 1:
-        errorMessage = "Insufficient funds: " + errorMessage
+        errorMessage = "Insufficient funds"
         break
       case 2:
-        errorMessage = "Incorrect PIN: " + errorMessage
+        errorMessage = "Incorrect PIN"
         break
       case 3:
-        errorMessage = "Card blocked: " + errorMessage
+        errorMessage = "Card blocked"
         break
       case 4:
-        errorMessage = "Card doesn't exist: " + errorMessage
+        errorMessage = "Card doesn't exist"
         break
       case 5:
-        errorMessage = "Card is expired: " + errorMessage
+        errorMessage = "Card is expired"
         break
       case 6:
-        errorMessage = "General/system error: " + errorMessage
+        errorMessage = "General/system error"
         break
+      default:
+        errorMessage = "Unknown error"
     }
 
     setResponse(errorMessage)
     return parsedResponse
   } catch (err) {
     console.error("Error in handleSendTransaction:", err)
-    setResponse("Transaction failed: " + err.message)
-    return { RespType: 6, msg: "Transaction failed: " + err.message }
+    setResponse("Transaction failed")
+    return { RespType: 6, msg: "Transaction failed" }
   }
 }
 
@@ -96,7 +96,7 @@ export const handleBalanceRequest = async (
     const parsedResponse: ErrorResponse = JSON.parse(res)
 
     if (parsedResponse.RespType === 0) {
-      setBalance(parseFloat(parsedResponse.msg))
+      setBalance(Number.parseFloat(parsedResponse.msg))
     } else {
       setResponse(parsedResponse.msg)
     }
@@ -121,3 +121,4 @@ export const useErrorPopup = () => {
 
   return { showPopup, popupMessage, showErrorPopup, closeErrorPopup }
 }
+

@@ -34,8 +34,8 @@ export function Summary({
   if (action === "withdraw") {
     return (
       <Withdraw
-        CardNumber={CardNumber}
-        PIN={PIN}
+        CardNumber={parseInt(CardNumber)}
+        PIN={parseInt(PIN)}
         balance={balance}
         setBalance={setBalance}
         setShowSummary={() => setAction(null)}
@@ -47,12 +47,21 @@ export function Summary({
       />
     )
   } else if (action === "balance") {
-    return <Balance CardNumber={CardNumber} balance={balance} setShowSummary={() => setAction(null)} />
+    return (
+      <Balance
+        CardNumber={parseInt(CardNumber)}
+        PIN={parseInt(PIN)}
+        balance={balance}
+        setBalance={setBalance}
+        setShowSummary={() => setAction(null)}
+        setResponse={setResponse}
+      />
+    )
   } else if (action === "deposit") {
     return (
       <Deposit
-        CardNumber={CardNumber}
-        PIN={PIN}
+        CardNumber={parseInt(CardNumber)}
+        PIN={parseInt(PIN)}
         balance={balance}
         setBalance={setBalance}
         setShowSummary={() => setAction(null)}

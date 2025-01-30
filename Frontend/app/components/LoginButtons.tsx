@@ -20,7 +20,7 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
   const accounts = [
     { CardNumber: 5555555555554444 }, //the pin is 1234
     { CardNumber: 4111111111111111 }, // the pin is 6789
-    { CardNumber: 378282246310005 }, // the pin is 
+    { CardNumber: 378282246310005 }, // the pin is
     { CardNumber: 378734193589014 }, // the pin is 1234
   ]
 
@@ -40,9 +40,15 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
   }
 
   const handleLogin = async () => {
-    if (selectedAccount) {
+    if (selectedAccount && enteredPIN.length === 4) {
       try {
-        const response = await handleSendTransaction(0, 0, selectedAccount.CardNumber, parseInt(enteredPIN), setResponse)
+        const response = await handleSendTransaction(
+          0,
+          0,
+          selectedAccount.CardNumber,
+          Number.parseInt(enteredPIN),
+          setResponse,
+        )
         if (response.RespType === 0) {
           setPIN(enteredPIN)
           setShowSummary(true)
@@ -57,6 +63,10 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
       } catch (err) {
         showErrorPopup(err.message)
       }
+    } else if (!selectedAccount) {
+      showErrorPopup("Please select an account first.")
+    } else if (enteredPIN.length !== 4) {
+      showErrorPopup("Please enter a 4-digit PIN.")
     }
   }
 
@@ -181,10 +191,7 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
           <div className="bg-white p-4 rounded shadow-lg">
             <h2 className="text-black text-2xl mb-4 font-extrabold">Error</h2>
             <p>{popupMessage}</p>
-            <button
-              className="mt-4 px-4 py-2 bg-blue-500 text-white rounded"
-              onClick={closeErrorPopup}
-            >
+            <button className="mt-4 px-4 py-2 bg-blue-500 text-white rounded" onClick={closeErrorPopup}>
               Close
             </button>
           </div>
@@ -193,3 +200,4 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
     </div>
   )
 }
+
