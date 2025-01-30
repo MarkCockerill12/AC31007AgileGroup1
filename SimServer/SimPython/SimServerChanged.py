@@ -11,7 +11,7 @@ import ssl
 tcp_host = "0.0.0.0"
 tcp_port = 31007
 buffer_size = 1024
-log_file_name = "/var/www/html/logFile.txt"
+log_file_name = "logs/logFile.txt"
 
 # DB Config
 db_host = "localhost"
@@ -209,10 +209,10 @@ def handle_switch_connection(incoming_socket, incoming_address):
             respType = isCardValid
 
         # make a withdrawl from the account
-        if Kind == 1 and isCardValid == True:
+        if Kind == 1 and isCardValid is True:
             # checking if the card has enough money for the withdrawl
             checkBalance = CorrectFunds(PAN, Amount)
-            if checkBalance == False:
+            if checkBalance is False:
                 print("you are withdrawing to much")
                 respMessage = "Withdraw Exceeds Balance"
                 respType = 1
@@ -223,7 +223,7 @@ def handle_switch_connection(incoming_socket, incoming_address):
                 respType = 0
 
         # get balance to be displayed
-        if Kind == 3 and isCardValid == True:
+        if Kind == 3 and isCardValid is True:
             mycursor = mydb.cursor()
             mycursor.execute("call getBalance(%s)", (PAN,))
             selectGET = mycursor.fetchall()
@@ -232,7 +232,7 @@ def handle_switch_connection(incoming_socket, incoming_address):
             respType = 0
 
         # deposit cash choice
-        if Kind == 2 and isCardValid == True:
+        if Kind == 2 and isCardValid is True:
             Increase = 0 - Amount
             makeWithdrawl(PAN, Increase)
 
