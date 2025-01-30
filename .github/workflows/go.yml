@@ -47,4 +47,5 @@ jobs:
       - name: Run Tests
         run: |
           cd switch
+          export TEST=true
           go test ./... -v
