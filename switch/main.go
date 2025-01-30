@@ -176,7 +176,7 @@ func SendTCPMessage(serverAddr string, message []byte) (string, error) {
 func main() {
 	// Define the address and port to listen on
 	address := "0.0.0.0:8080"
-	cer, err := tls.LoadX509KeyPair("server-cert.pem", "server-key.pem") //server.crt and server.key are the certificate files. These must contain PEM encoded data.
+	cer, err := tls.LoadX509KeyPair("Certs/server-cert.pem", "Certs/server-key.pem") //server.crt and server.key are the certificate files. These must contain PEM encoded data.
 
 	if err != nil {
 		error := fmt.Errorf("ERROR: failed to load certificates: %w", err)
