@@ -13,6 +13,9 @@ jobs:
     name: Run Tests
     runs-on: ubuntu-latest
 
+    env:
+      TEST: true
+
     steps:
       # Checkout the code
       - name: Checkout Code
@@ -47,5 +50,4 @@ jobs:
       - name: Run Tests
         run: |
           cd switch
-          export TEST=true
           go test ./... -v
