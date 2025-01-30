@@ -24,10 +24,7 @@ export function Balance({ CardNumber, balance, setShowSummary }: BalanceProps) {
         transition={{ duration: 0.5 }}
       >
         <h2 className="text-black text-2xl mb-4 font-extrabold">{t.balance}</h2>
-        <div className="flex justify-between text-black mb-2">
-          <span className="font-bold">{t.accountNumber}:</span>
-          <span>{CardNumber}</span>
-        </div>
+
         <div className="flex justify-between text-black mb-2">
           <span className="font-bold">{t.balance}:</span>
           <span>£{balance}</span>

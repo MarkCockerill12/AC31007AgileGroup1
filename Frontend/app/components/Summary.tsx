@@ -16,7 +16,16 @@ interface SummaryProps {
   setShowBalance: React.Dispatch<React.SetStateAction<boolean>>
 }
 
-export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, response, setResponse, setShowBalance }: SummaryProps) {
+export function Summary({
+  CardNumber,
+  PIN,
+  balance,
+  setBalance,
+  setShowSummary,
+  response,
+  setResponse,
+  setShowBalance,
+}: SummaryProps) {
   const [action, setAction] = useState(null)
   const { t } = useTranslation()
   const [transactionAmount, setTransactionAmount] = useState(0)
@@ -38,10 +47,7 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
       />
     )
   } else if (action === "balance") {
-    return <Balance 
-      CardNumber={CardNumber}
-      balance={balance} 
-      setShowSummary={() => setAction(null)} />
+    return <Balance CardNumber={CardNumber} balance={balance} setShowSummary={() => setAction(null)} />
   } else if (action === "deposit") {
     return (
       <Deposit
@@ -64,63 +70,69 @@ export function Summary({ CardNumber, PIN, balance, setBalance, setShowSummary, 
   }
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center min-h-screen w-full max-w-4xl mx-auto px-4">
       <motion.div
-        className="text-center bg-white p-4 rounded shadow-lg"
+        className="w-full bg-white p-8 rounded-2xl shadow-lg"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-black text-2xl mb-4 font-extrabold">{t.accountSummary}</h2>
-        <div className="flex justify-between text-black mb-2">
-          <span className="font-bold">{t.accountNumber}:</span>
-          <span>{CardNumber}</span>
-        </div>
-        <div className="flex justify-between text-black mb-2">
-          <span className="font-bold">{t.lastTransaction}:</span>
+        <h2 className="text-black text-3xl mb-6 font-extrabold text-center">{t.accountSummary}</h2>
+        <div className="flex flex-col space-y-4 mb-8">
+          <div className="flex justify-between text-black text-lg">
+            <span className="font-bold">{t.accountNumber}:</span>
+            <span>{CardNumber}</span>
+          </div>
           {transactionAmount > 0 && (
-            <span>
-              {transactionKind === "withdraw" ? "-" : "+"}£{transactionAmount}
-            </span>
+            <div className="flex justify-between text-black text-lg">
+              <span className="font-bold">{t.lastTransaction}:</span>
+              <span>
+                {transactionKind === "withdraw" ? "-" : "+"}£{transactionAmount}
+              </span>
+            </div>
           )}
-        </div>
-        <div className="flex justify-between text-black mb-2">
-          <span className="font-bold">{t.response}:</span>
-          <span>{response}</span>
+          <div className="flex justify-between text-black text-lg">
+            <span className="font-bold">{t.response}:</span>
+            <span>{response}</span>
+          </div>
         </div>
 
-        <button
-          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
-          onClick={() => setAction("withdraw")}
-        >
-          {t.withdrawal}
-        </button>
-        <button
-          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
-          onClick={() => setAction("deposit")}
-        >
-          {t.deposit}
-        </button>
-        <button
-          className="mt-4 m-6 px-4 py-2 bg-white text-black rounded transition-transform duration-200 hover:scale-125"
-          onClick={() => setAction("balance")}
-        >
-          {t.balance}
-        </button>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <button
+            className="p-4  text-black rounded-lg transition-transform duration-200 hover:scale-110 flex flex-col items-center justify-center"
+            onClick={() => setAction("withdraw")}
+          >
+            <span className="text-2xl mb-2">{t.withdrawal}</span>
+            <span className="text-sm">{t.withdrawDescription}</span>
+          </button>
+          <button
+            className="p-4  text-black rounded-lg transition-transform duration-200 hover:scale-110 flex flex-col items-center justify-center"
+            onClick={() => setAction("deposit")}
+          >
+            <span className="text-2xl mb-2">{t.deposit}</span>
+            <span className="text-sm">{t.depositDescription}</span>
+          </button>
+          <button
+            className="p-4 text-black rounded-lg transition-transform duration-200 hover:scale-110 flex flex-col items-center justify-center"
+            onClick={() => setAction("balance")}
+          >
+            <span className="text-2xl mb-2">{t.balance}</span>
+            <span className="text-sm">{t.balanceDescription}</span>
+          </button>
+        </div>
       </motion.div>
-      <div className=" mt-4 ml-4 flex items-center duration-200 hover:scale-125">
-        <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer" onClick={handleGoBack} />
-        <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
+      <div className="mt-8 flex items-center">
+        <img
+          src="/assets/backButton.png"
+          alt="Back Icon"
+          className="w-6 h-6 cursor-pointer mr-2"
           onClick={handleGoBack}
-        >
+        />
+        <button className="text-white font-bold text-lg hover:underline" onClick={handleGoBack}>
           {t.goBack}
-        </motion.button>
+        </button>
       </div>
-      <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
-    </>
-  );
+      <div className="fixed top-0 right-0 mt-4 mr-4 text-white text-4xl font-bold">NCR</div>
+    </div>
+  )
 }

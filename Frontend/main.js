@@ -49,7 +49,7 @@ ipcMain.handle("send-transaction", async (event, transactionData) => {
     const client = new net.Socket()
 
     // Connect to the server
-    const SERVER_IP = "167.99.83.219" 
+    const SERVER_IP = "localhost" //167.99.83.219
     const SERVER_PORT = 8080
 
     client.connect(SERVER_PORT, SERVER_IP, () => {

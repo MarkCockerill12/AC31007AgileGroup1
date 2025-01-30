@@ -26,9 +26,9 @@ type Response struct {
 }
 
 var networksAddresses = map[string]string{
-	"visa":       "54.85.70.115:31007",
-	"mastercard": "54.85.70.115:31007",
-	"amex":       "54.85.70.115:31007", //check this to make sure its correct
+	"visa":       "52.90.150.134:31007",
+	"mastercard": "52.90.150.134:31007",
+	"amex":       "52.90.150.134:31007", //check this to make sure its correct
 }
 
 var (
