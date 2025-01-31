@@ -68,7 +68,7 @@ func (logger *Logger[T]) StartLogger() {
 				panic(err)
 			}
 
-			record := time.Now().UTC().Format(time.RFC3339) + "\n" + logger.stringify(loggedVal) + "\n"
+			record := time.Now().UTC().Format(time.RFC3339) + "\n" + logger.stringify(loggedVal) + "\n\n"
 
 			fmt.Println(record)
 
