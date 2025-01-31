@@ -4,7 +4,6 @@ import { useTranslation } from "../contexts/TranslationContext"
 import { handleSendTransaction, useErrorPopup } from "../transactionUtils"
 import type React from "react"
 
-
 interface LoginButtonsProps {
   setCardNumber: (CardNumber: number) => void
   setPIN: (PIN: string) => void
@@ -19,21 +18,26 @@ const formatCardNumber = (num: number) => {
   return `**** **** **** ${str.slice(-4)}`;
 };
 
-export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setResponse }: LoginButtonsProps) {
+export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setResponse, setBalance }: LoginButtonsProps) {
   const { t } = useTranslation()
   const [selectedAccount, setSelectedAccount] = useState<{ CardNumber: number } | null>(null)
   const [enteredPIN, setEnteredPIN] = useState("")
   const [loginAttempts, setLoginAttempts] = useState(0)
   const { showPopup, popupMessage, showErrorPopup, closeErrorPopup } = useErrorPopup()
+  
   const accounts = [
-    { CardNumber: 5555555555554444, displayNumber: "5555 5555 5555 4444" },
-    { CardNumber: 4111111111111111, displayNumber: "4111 1111 1111 1111" },
-    { CardNumber: 378282246310005, displayNumber: "3782 8224 6310 005" },
-    { CardNumber: 378734193589014, displayNumber: "3787 3419 3589 014" },
+    { CardNumber: 5555555555554444, displayNumber: "5555 5555 5555 4444" }, //the pin is 1234
+    { CardNumber: 4111111111111111, displayNumber: "4111 1111 1111 1111" }, //the pin is 6789
+    { CardNumber: 378282246310005, displayNumber: "3782 8224 6310 005" }, //the pin is 8901
+    { CardNumber: 378734193589014, displayNumber: "3787 3419 3589 014" }, //pin is 1234
   ]
 
   const handleAccountSelect = (account: typeof accounts[number]) => {
     setSelectedAccount(account)
+  }
+
+  const handlePINClear = () => {
+    setEnteredPIN("")
   }
 
   const handlePINDelete = () => {
@@ -48,85 +52,108 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
 
   const handleLogin = async () => {
     if (!selectedAccount) {
-      showErrorPopup("Please select an account first.")
-      return
+      showErrorPopup("Please select an account first.");
+      return;
     }
-
+  
     if (enteredPIN.length !== 4) {
-      showErrorPopup("Please enter a 4-digit PIN.")
-      return
+      showErrorPopup("Please enter a 4-digit PIN.");
+      return;
     }
-
+  
     try {
-      const response = await handleSendTransaction(
-        0, // Balance inquiry transaction
+      const loginResponse = await handleSendTransaction(
+        0,
         0,
         selectedAccount.CardNumber,
         Number.parseInt(enteredPIN),
         setResponse,
-      )
+      );
       
-      switch (response.RespType) {
-        case 0:
-          setCardNumber(selectedAccount.CardNumber)
-          setPIN(enteredPIN)
-          setShowSummary(true)
-          break
-        case 2:
-          setLoginAttempts((prev) => prev + 1)
-          if (loginAttempts >= 2) {
-            showErrorPopup("Incorrect PIN. Last attempt remaining", () => window.location.reload())
-          } else {
-            showErrorPopup(`Incorrect PIN. ${3 - loginAttempts} attempts remaining`)
-          }
-          break
-        case 3:
-          showErrorPopup("Card blocked. Please contact support.", () => window.location.reload())
-          break
-        case 4:
-          showErrorPopup("Card not recognized.", () => window.location.reload())
-          break
-        case 5:
-          showErrorPopup("Card expired.", () => window.location.reload())
-          break
-        default:
-          showErrorPopup("System error. Please try again later.", () => window.location.reload())
+      if (loginResponse.RespType === 0) {
+        const balanceResponse = await handleSendTransaction(
+          3,
+          0,
+          selectedAccount.CardNumber,
+          Number.parseInt(enteredPIN),
+          setResponse,
+        );
+  
+        if (balanceResponse.RespType === 0) {
+          const newBalance = Number.parseFloat(balanceResponse.msg);
+          setBalance(newBalance);
+          setCardNumber(selectedAccount.CardNumber);
+          setPIN(enteredPIN);
+          setShowSummary(true);
+        } else {
+          showErrorPopup("Could not fetch balance. Please try again.");
+        }
+      } else {
+        switch (loginResponse.RespType) {
+          case 1:
+          case 2:
+            setLoginAttempts(prev => {
+              const newAttempts = prev + 1;
+              if (newAttempts >= 4) {
+                showErrorPopup(t.errors.incorrectPinLast, () => window.location.reload());
+              } else {
+                showErrorPopup(t.errors.incorrectPinAttempts.replace("{attempts}", (4 - newAttempts).toString()));
+              }
+              return newAttempts;
+            });
+            break;
+          case 3:
+            showErrorPopup(t.errors.cardBlocked, () => window.location.reload());
+            break;
+          case 4:
+            showErrorPopup(t.errors.cardNotRecognized, () => window.location.reload());
+            break;
+          case 5:
+            showErrorPopup(t.errors.cardExpired, () => window.location.reload());
+            break;
+          default:
+            showErrorPopup(t.errors.systemError, () => window.location.reload());
+        }
       }
     } catch (err) {
-      showErrorPopup("Connection error. Please try again.")
+      showErrorPopup(t.errors.connectionError);
     }
-  }
+    setEnteredPIN("");
+  };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">
-      <h2 className="text-white text-4xl mb-10 font-extrabold">{selectedAccount ? t.enterPIN : t.selectAccount}</h2>
+      <h2 className="text-white text-4xl mb-10 font-extrabold">
+        {selectedAccount ? t.enterPIN : t.selectAccount}
+      </h2>
+      
       {!selectedAccount ? (
         <div className="grid grid-cols-2 gap-8">
           {accounts.map((account, index) => (
             <div
               key={index}
-              className="flex flex-col items-center justify-center cursor-pointer group"
+              className="flex flex-col items-center justify-center cursor-pointer"
               onClick={() => handleAccountSelect(account)}
             >
-              <div className="relative flex flex-col items-center">
+              <div className="relative group flex flex-col items-center">
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ duration: 1 }}
                   className="relative"
-                >
-                  <div className="absolute inset-0 bg-gradient-to-r from-ncr-blue-900 to-ncr-blue-500 opacity-0 group-hover:opacity-25 rounded-xl transition-opacity" />
-                  <div className="bg-white p-4 rounded-xl shadow-lg border border-ncr-blue-300">
-                    <div className="w-48 h-32 bg-gradient-to-br from-ncr-blue-500 to-ncr-blue-700 rounded-lg flex items-center justify-center">
-                      <div className="text-white font-mono tracking-wider">
-                        {formatCardNumber(account.CardNumber)}
-                      </div>
-                    </div>
-                  </div>
-                </motion.div>
-                <div className="text-white font-medium mt-4 text-center">
-                  NCR Premier Banking
-                  <div className="text-sm opacity-75 mt-1">Account {index + 1}</div>
+                  style={{
+                    backgroundImage: "url(/assets/enterCard.png)",
+                    backgroundSize: "contain",
+                    backgroundPosition: "center",
+                    backgroundRepeat: "no-repeat",
+                    width: "200px",
+                    height: "150px",
+                  }}
+                  whileHover={{ backgroundImage: "url(/assets/enterCardHover.png)" }}
+                  whileTap={{ backgroundImage: "url(/assets/enterCardOnClick.png)" }}
+                />
+                <div className="text-white font-bold m-2 p-2 mt-2 duration-200 group-hover:scale-125">
+                <div className="text-sm mt-1">{t.account} {index + 1}</div>
                 </div>
               </div>
             </div>
@@ -139,7 +166,10 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1 }}
         >
-          <div className="mb-4 text-center">
+          <div className="mb-6 text-center">
+            <div className="text-white font-mono tracking-wider mb-4">
+              {formatCardNumber(selectedAccount.CardNumber)}
+            </div>
             <input
               type="password"
               value={enteredPIN}
@@ -148,6 +178,7 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
               placeholder="****"
             />
           </div>
+          
           <div className="grid grid-cols-3 gap-2">
             {[1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
               <motion.button
@@ -162,11 +193,11 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
             ))}
             <motion.button
               className="p-4 text-white text-2xl font-bold rounded duration-200 hover:scale-110"
-              onClick={() => setSelectedAccount(null)}
+              onClick={handlePINClear}
               whileHover={{ scale: 1.1 }}
               whileTap={{ scale: 0.9 }}
             >
-              {t.cancel}
+              {t.clear}
             </motion.button>
             <motion.button
               className="p-4 text-white text-2xl font-bold rounded duration-200 hover:scale-110"
@@ -185,6 +216,7 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
               ←
             </motion.button>
           </div>
+
           <motion.button
             className="w-full mt-4 p-4 text-white text-2xl font-bold rounded duration-200 hover:scale-110"
             onClick={handleLogin}
@@ -195,6 +227,7 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
           </motion.button>
         </motion.div>
       )}
+
       <div className="mt-4 ml-4 flex items-center duration-200 hover:scale-110">
         <img
           src="/assets/backButton.png"
@@ -212,7 +245,10 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
           {t.goBack}
         </motion.button>
       </div>
-      <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
+
+      <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">
+        NCR
+      </div>
 
       {showPopup && (
         <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">

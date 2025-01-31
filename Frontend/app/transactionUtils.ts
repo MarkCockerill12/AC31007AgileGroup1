@@ -5,6 +5,7 @@ interface ErrorResponse {
   TnxID: string
   RespType: number
   msg: string
+  CrncyType: string
 }
 
 export const handleSendTransaction = async (
@@ -24,15 +25,15 @@ export const handleSendTransaction = async (
     TnxID,
     TnxTime,
     TnxKind: transactionKind,
-    TnxAmount: Number.parseFloat(amount.toString()), // Ensure amount is a number
+    TnxAmount: Number.parseFloat(amount.toString()),
     CardNumber,
-    PIN: Number.parseInt(PIN.toString()), // Ensure PIN is an integer
+    PIN: Number.parseInt(PIN.toString()),
   }
 
   try {
     const res = await window.electron.sendTransaction(transactionData)
     const parsedResponse: ErrorResponse = JSON.parse(res)
-
+    
     let errorMessage
     switch (parsedResponse.RespType) {
       case 0:
@@ -65,9 +66,16 @@ export const handleSendTransaction = async (
   } catch (err) {
     console.error("Error in handleSendTransaction:", err)
     setResponse("Transaction failed")
-    return { RespType: 6, msg: "Transaction failed" }
+    return { 
+      RespType: 6, 
+      msg: "Transaction failed",
+      atmID: "",
+      TnxID: "",
+      CrncyType: "0"
+    }
   }
 }
+
 
 export const handleBalanceRequest = async (
   CardNumber: number,

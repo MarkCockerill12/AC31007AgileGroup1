@@ -2,72 +2,96 @@ import React, { useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { useTranslation } from '../contexts/TranslationContext';
 import { handleSendTransaction } from '../transactionUtils';
+import { useErrorPopup } from '../transactionUtils';
 
 interface BalanceProps {
   CardNumber: number;
   PIN: number;
   balance: number;
-  setBalance: (balance: number) => void;
+  setBalance: React.Dispatch<React.SetStateAction<number>>;
   setShowSummary: (show: boolean) => void;
-  setResponse: (response: string) => void;
+  setResponse: React.Dispatch<React.SetStateAction<string>>;
+  currencyType: string;
+  setCurrencyType: (type: string) => void;
 }
 
-export function Balance({ CardNumber, PIN, balance, setBalance, setShowSummary, setResponse }: BalanceProps) {
+export function Balance({ 
+  CardNumber, 
+  PIN, 
+  balance, 
+  setBalance, 
+  setShowSummary, 
+  setResponse,
+  currencyType,
+  setCurrencyType 
+}: BalanceProps) {
   const { t } = useTranslation();
-
-  const handleGoBack = () => {
-    setShowSummary(false);
-  };
+  const { showPopup, popupMessage, showErrorPopup, closeErrorPopup } = useErrorPopup();
 
   const handleBalance = async () => {
     try {
-      const response = await handleSendTransaction(0, 0, CardNumber, PIN, setResponse);
+      const response = await handleSendTransaction(3, 0, CardNumber, PIN, setResponse);
       if (response.RespType === 0) {
         const newBalance = Number.parseFloat(response.msg);
         setBalance(newBalance);
+        setCurrencyType(response.CrncyType);
+      } else {
+        showErrorPopup(response.msg, () => window.location.reload());
       }
     } catch (error) {
       console.error("Balance request failed:", error);
-      setResponse("Failed to fetch balance");
+      showErrorPopup("Connection error. Please try again.", () => window.location.reload());
     }
   };
 
-  // Call handleBalance when component mounts
   useEffect(() => {
     handleBalance();
-  }, []); // Empty dependency array means this runs once on mount
+  }, []);
 
-  const displayBalance = balance.toFixed(2);
-
+  const displayBalance = currencyType === "1" 
+    ? `£${(balance * 0.7).toFixed(2)} ($${balance.toFixed(2)})` 
+    : `£${balance.toFixed(2)}`;
 
   return (
-    <>
+    <div className="flex flex-col items-center justify-center min-h-screen">
       <motion.div
-        className="text-center bg-white p-4 rounded shadow-lg"
+        className="text-center bg-white p-8 rounded-xl shadow-lg w-full max-w-md"
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
-        <h2 className="text-black text-2xl mb-4 font-extrabold">{t.balance}</h2>
-
-        <div className="flex justify-between text-black mb-2">
+        <h2 className="text-black text-3xl mb-6 font-extrabold">{t.balance}</h2>
+        <div className="flex justify-between text-black text-xl">
           <span className="font-bold">{t.balance}:</span>
-          <span>£{balance}</span>
+          <span>{displayBalance}</span>
         </div>
       </motion.div>
-      <div className=" mt-4 ml-4 flex items-center duration-200 hover:scale-125">
-        <img src="/assets/backButton.png" alt="Back Icon" className="w-6 h-6 cursor-pointer " onClick={handleGoBack} />
+
+      <div className="mt-6 flex items-center justify-center">
         <motion.button
-          className="px-4 py-2 text-white font-bold rounded transition-transform"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ duration: 0.5 }}
-          onClick={handleGoBack}
+          className="flex items-center text-white font-bold text-lg hover:underline"
+          onClick={() => setShowSummary(true)}
+          whileHover={{ scale: 1.1 }}
         >
+          <img src="/assets/backButton.png" alt="Back" className="w-6 h-6 mr-2" />
           {t.goBack}
         </motion.button>
       </div>
-      <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
-    </>
+
+      {showPopup && (
+        <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+          <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
+            <div className="text-ncr-blue-900 font-bold text-xl mb-4">NCR Banking</div>
+            <p className="text-gray-700 mb-4">{popupMessage}</p>
+            <button
+              className="w-full bg-ncr-blue-500 hover:bg-ncr-blue-600 text-black font-bold py-2 px-4 rounded-lg transition-colors"
+              onClick={closeErrorPopup}
+            >
+              {t.close}
+            </button>
+          </div>
+        </div>
+      )}
+    </div>
   );
 }

@@ -4,6 +4,8 @@ import { useTranslation } from "../contexts/TranslationContext"
 import { Withdraw } from "./Withdraw"
 import { Deposit } from "./Deposit"
 import { Balance } from "./Balance"
+import { useErrorPopup } from '../transactionUtils';
+
 
 interface SummaryProps {
   CardNumber: string
@@ -14,6 +16,8 @@ interface SummaryProps {
   response: string
   setResponse: React.Dispatch<React.SetStateAction<string>>
   setShowBalance: React.Dispatch<React.SetStateAction<boolean>>
+  currencyType: string;
+  setCurrencyType: React.Dispatch<React.SetStateAction<string>>;
 }
 
 export function Summary({
@@ -25,11 +29,27 @@ export function Summary({
   response,
   setResponse,
   setShowBalance,
+  currencyType,
+  setCurrencyType
 }: SummaryProps) {
   const [action, setAction] = useState(null)
   const { t } = useTranslation()
   const [transactionAmount, setTransactionAmount] = useState(0)
   const [transactionKind, setTransactionKind] = useState(null)
+  const { showPopup, popupMessage, showErrorPopup, closeErrorPopup } = useErrorPopup()
+  const displayTransactionAmount = currencyType === "1" 
+  ? `£${(transactionAmount * 0.7).toFixed(2)} ($${transactionAmount.toFixed(2)})` 
+  : `£${transactionAmount.toFixed(2)}`;
+
+
+  const handleAction = (actionType: string) => {
+    try {
+      setAction(actionType)
+    } catch (error) {
+      console.error("Error setting action:", error)
+      showErrorPopup("An error occurred. Please try again.")
+    }
+  }
 
   if (action === "withdraw") {
     return (
@@ -44,6 +64,8 @@ export function Summary({
           setTransactionKind("withdraw")
         }}
         setResponse={setResponse}
+        currencyType={currencyType}
+        setCurrencyType={setCurrencyType}
       />
     )
   } else if (action === "balance") {
@@ -55,6 +77,8 @@ export function Summary({
         setBalance={setBalance}
         setShowSummary={() => setAction(null)}
         setResponse={setResponse}
+        currencyType={currencyType}
+        setCurrencyType={setCurrencyType}
       />
     )
   } else if (action === "deposit") {
@@ -70,6 +94,8 @@ export function Summary({
           setTransactionKind("deposit")
         }}
         setResponse={setResponse}
+        currencyType={currencyType}
+        setCurrencyType={setCurrencyType}
       />
     )
   }
@@ -94,11 +120,11 @@ export function Summary({
           </div>
           {transactionAmount > 0 && (
             <div className="flex justify-between text-black text-lg">
-              <span className="font-bold">{t.lastTransaction}:</span>
-              <span>
-                {transactionKind === "withdraw" ? "-" : "+"}£{transactionAmount}
-              </span>
-            </div>
+            <span className="font-bold">{t.lastTransaction}:</span>
+            <span>
+              {transactionKind === "withdraw" ? "-" : "+"}{displayTransactionAmount}
+            </span>
+          </div>
           )}
           <div className="flex justify-between text-black text-lg">
             <span className="font-bold">{t.response}:</span>
@@ -130,7 +156,7 @@ export function Summary({
           </button>
         </div>
       </motion.div>
-      <div className="mt-8 flex items-center">
+      <div className="mt-8 flex items-center duration-200 hover:scale-110">
         <img
           src="/assets/backButton.png"
           alt="Back Icon"
@@ -142,6 +168,20 @@ export function Summary({
         </button>
       </div>
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white text-4xl font-bold">NCR</div>
-    </div>
-  )
+      {showPopup && (
+      <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50">
+        <div className="bg-white p-6 rounded-xl shadow-xl max-w-sm w-full">
+          <div className="text-ncr-blue-900 font-bold text-xl mb-4">NCR Banking</div>
+          <p className="text-gray-700 mb-4">{popupMessage}</p>
+          <button
+            className="w-full bg-ncr-blue-500 hover:bg-ncr-blue-600 text-black font-bold py-2 px-4 rounded-lg transition-colors"
+            onClick={closeErrorPopup}
+          >
+            {t.close}
+          </button>
+        </div>
+      </div>
+    )}
+  </div>  
+  ) 
 }

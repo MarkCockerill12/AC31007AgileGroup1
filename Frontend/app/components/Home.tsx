@@ -1,4 +1,4 @@
-import React from "react"
+import React, { useEffect } from "react"
 import { motion } from "framer-motion"
 import { useTranslation } from "../contexts/TranslationContext"
 
@@ -7,7 +7,13 @@ interface HomeProps {
 }
 
 export function Home({ onButtonClick }: HomeProps) {
-  const { t, language, setLanguage } = useTranslation()
+  const { t, language, setLanguage } = useTranslation();
+
+  // Remove initial server/client state mismatch
+  useEffect(() => {
+    // Update title after initial render
+    document.title = t.title;
+  }, [t.title]);
 
   return (
     <div className="flex flex-col items-center justify-center min-h-[calc(100vh-4rem)]">

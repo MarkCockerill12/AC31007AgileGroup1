@@ -15,6 +15,7 @@ export default function App() {
   const [balance, setBalance] = useState(0)
   const [response, setResponse] = useState("")
   const [showBalance, setShowBalance] = useState(false)
+  const [currencyType, setCurrencyType] = useState("0") // 0=GBP, 1=USD
 
   return (
     <TranslationProvider>
@@ -30,6 +31,8 @@ export default function App() {
               response={response}
               setResponse={setResponse}
               setShowBalance={setShowBalance}
+              currencyType={currencyType}
+              setCurrencyType={setCurrencyType}
             />
           ) : showLoginButtons ? (
             <LoginButtons
@@ -47,6 +50,8 @@ export default function App() {
               PIN={parseInt(PIN)}
               setBalance={setBalance}
               setResponse={setResponse}
+              currencyType={currencyType}
+              setCurrencyType={setCurrencyType}
             />
           ) : (
             <Home onButtonClick={() => setShowLoginButtons(true)} />

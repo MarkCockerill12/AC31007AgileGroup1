@@ -29,7 +29,19 @@
     "login": "Login",
     "withdrawDescription": "Select the amount you would like to withdraw",
     "depositDescription": "Select the amount you would like to deposit",
-    "balanceDescription": "View your account balance"
+    "balanceDescription": "View your account balance",
+    "confirm": "Confirm",
+    "clear": "Clear",
+    "errors": {
+      "connectionError": "Connection error. Please try again.",
+      "systemError": "System error. Please try again later.",
+      "cardBlocked": "Card blocked. Please contact support.",
+      "cardNotRecognized": "Card not recognized.",
+      "cardExpired": "Card expired.",
+      "incorrectPinLast": "Incorrect PIN. Last attempt remaining",
+      "incorrectPinAttempts": "Incorrect PIN. {attempts} attempts remaining",
+      "cardInvalid": "Invalid card. Please try again."
+    }
 
   },
   "es": {
@@ -52,7 +64,27 @@
     "withdrawCustomAmount": "Retirar cantidad personalizada",
     "depositCustomAmount": "Depositar cantidad personalizada",
     "close": "Cerrar",
-    "invalidTransaction": "Transacción inválida"
+    "invalidTransaction": "Transacción inválida",
+    "selectAccount": "Seleccionar Cuenta",
+    "account": "Cuenta",
+    "enterPIN": "Ingresar PIN",
+    "cancel": "Cancelar",
+    "login": "Iniciar Sesión",
+    "withdrawDescription": "Seleccione el monto que desea retirar",
+    "depositDescription": "Seleccione el monto que desea depositar",
+    "balanceDescription": "Ver el saldo de su cuenta",
+    "confirm": "Confirmar",
+    "clear": "Borrar",
+    "errors": {
+      "connectionError": "Error de conexión. Por favor, inténtelo de nuevo.",
+      "systemError": "Error del sistema. Por favor, inténtelo más tarde.",
+      "cardBlocked": "Tarjeta bloqueada. Contacte con soporte.",
+      "cardNotRecognized": "Tarjeta no reconocida.",
+      "cardExpired": "Tarjeta caducada.",
+      "incorrectPinLast": "PIN incorrecto. Último intento restante",
+      "incorrectPinAttempts": "PIN incorrecto. {attempts} intentos restantes",
+      "cardInvalid": "Tarjeta inválida. Por favor, inténtelo de nuevo."
+    }
   },
   "fr": {
     "title": "DAB NCR",
@@ -74,7 +106,28 @@
     "withdrawCustomAmount": "Retirer montant personnalisé",
     "depositCustomAmount": "Déposer montant personnalisé",
     "close": "Fermer",
-    "invalidTransaction": "Transaction invalide"
+    "invalidTransaction": "Transaction invalide",
+    "selectAccount": "Sélectionner le Compte",
+    "account": "Compte",
+    "enterPIN": "Entrer le PIN",
+    "cancel": "Annuler",
+    "login": "Connexion",
+    "withdrawDescription": "Sélectionnez le montant que vous souhaitez retirer",
+    "depositDescription": "Sélectionnez le montant que vous souhaitez déposer",
+    "balanceDescription": "Voir le solde de votre compte",
+    "confirm": "Confirmer",
+    "clear": "Effacer",
+    "errors": {
+      "connectionError": "Erreur de connexion. Veuillez réessayer.",
+      "systemError": "Erreur système. Veuillez réessayer plus tard.",
+      "cardBlocked": "Carte bloquée. Veuillez contacter le support.",
+      "cardNotRecognized": "Carte non reconnue.",
+      "cardExpired": "Carte expirée.",
+      "incorrectPinLast": "Code PIN incorrect. Dernière tentative restante",
+      "incorrectPinAttempts": "Code PIN incorrect. {attempts} tentatives restantes",
+      "cardInvalid": "Carte invalide. Veuillez réessayer."
+    }
+
   },
   "de": {
     "title": "NCR Geldautomat",
@@ -96,7 +149,27 @@
     "withdrawCustomAmount": "Benutzerdefinierten Betrag abheben",
     "depositCustomAmount": "Benutzerdefinierten Betrag einzahlen",
     "close": "Schließen",
-    "invalidTransaction": "Ungültige Transaktion"
+    "invalidTransaction": "Ungültige Transaktion",
+    "selectAccount": "Konto auswählen",
+    "account": "Konto",
+    "enterPIN": "PIN eingeben",
+    "cancel": "Abbrechen",
+    "login": "Anmelden",
+    "withdrawDescription": "Wählen Sie den Betrag, den Sie abheben möchten",
+    "depositDescription": "Wählen Sie den Betrag, den Sie einzahlen möchten",
+    "balanceDescription": "Kontostand anzeigen",
+    "confirm": "Bestätigen",
+    "clear": "Löschen",
+    "errors": {
+      "connectionError": "Verbindungsfehler. Bitte versuchen Sie es erneut.",
+      "systemError": "Systemfehler. Bitte versuchen Sie es später erneut.",
+      "cardBlocked": "Karte gesperrt. Bitte kontaktieren Sie den Support.",
+      "cardNotRecognized": "Karte nicht erkannt.",
+      "cardExpired": "Karte abgelaufen.",
+      "incorrectPinLast": "Falscher PIN. Letzter Versuch verbleibend",
+      "incorrectPinAttempts": "Falscher PIN. {attempts} Versuche verbleibend",
+      "cardInvalid": "Ungültige Karte. Bitte versuchen Sie es erneut."
+    }
   },
   "zh": {
     "title": "NCR 自动取款机",
@@ -118,7 +191,27 @@
     "withdrawCustomAmount": "取出自定义金额",
     "depositCustomAmount": "存入自定义金额",
     "close": "关闭",
-    "invalidTransaction": "无效交易"
+    "invalidTransaction": "无效交易",
+    "selectAccount": "选择账户",
+    "account": "账户",
+    "enterPIN": "输入密码",
+    "cancel": "取消",
+    "login": "登录",
+    "withdrawDescription": "请选择您要取出的金额",
+    "depositDescription": "请选择您要存入的金额",
+    "balanceDescription": "查看账户余额",
+    "confirm": "确认",
+    "clear": "清除",
+    "errors": {
+      "connectionError": "连接错误。请重试。",
+      "systemError": "系统错误。请稍后重试。",
+      "cardBlocked": "卡已被锁定。请联系支持。",
+      "cardNotRecognized": "无法识别卡。",
+      "cardExpired": "卡已过期。",
+      "incorrectPinLast": "PIN错误。最后一次尝试机会",
+      "incorrectPinAttempts": "PIN错误。还剩{attempts}次尝试机会"
+    }
+      
   },
   "ja": {
     "title": "NCR ATM",
@@ -140,7 +233,27 @@
     "withdrawCustomAmount": "カスタム金額を引き出す",
     "depositCustomAmount": "カスタム金額を預ける",
     "close": "閉じる",
-    "invalidTransaction": "無効な取引"
+    "invalidTransaction": "無効な取引",
+    "selectAccount": "アカウント選択",
+    "account": "アカウント",
+    "enterPIN": "暗証番号を入力",
+    "cancel": "キャンセル",
+    "login": "ログイン",
+    "withdrawDescription": "引き出す金額を選択してください",
+    "depositDescription": "預け入れる金額を選択してください",
+    "balanceDescription": "残高を確認する",
+    "confirm": "確認",
+    "clear": "クリア",
+    "errors": {
+      "connectionError": "接続エラー。もう一度お試しください。",
+      "systemError": "システムエラー。後でもう一度お試しください。",
+      "cardBlocked": "カードがブロックされました。サポートにお問い合わせください。",
+      "cardNotRecognized": "カードが認識されません。",
+      "cardExpired": "カードの有効期限が切れています。",
+      "incorrectPinLast": "暗証番号が間違っています。最後の試行です",
+      "incorrectPinAttempts": "暗証番号が間違っています。残り{attempts}回試行可能です",
+      "cardInvalid": "無効なカードです。もう一度お試しください。"
+    }
   },
   "ru": {
     "title": "Банкомат NCR",
@@ -162,7 +275,28 @@
     "withdrawCustomAmount": "Снять пользовательскую сумму",
     "depositCustomAmount": "Внести пользовательскую сумму",
     "close": "Закрыть",
-    "invalidTransaction": "Недействительная транзакция"
+    "invalidTransaction": "Недействительная транзакция",
+    "selectAccount": "Выбрать счет",
+    "account": "Счет",
+    "enterPIN": "Введите PIN-код",
+    "cancel": "Отмена",
+    "login": "Войти",
+    "withdrawDescription": "Выберите сумму для снятия",
+    "depositDescription": "Выберите сумму для внесения",
+    "balanceDescription": "Просмотр баланса счета",
+    "confirm": "Подтвердить",
+    "clear": "Очистить",
+    "errors": {
+      "connectionError": "Ошибка соединения. Пожалуйста, попробуйте снова.",
+      "systemError": "Системная ошибка. Пожалуйста, попробуйте позже.",
+      "cardBlocked": "Карта заблокирована. Обратитесь в службу поддержки.",
+      "cardNotRecognized": "Карта не распознана.",
+      "cardExpired": "Срок действия карты истек.",
+      "incorrectPinLast": "Неверный PIN-код. Осталась последняя попытка",
+      "incorrectPinAttempts": "Неверный PIN-код. Осталось попыток: {attempts}",
+      "cardInvalid": "Недействительная карта. Пожалуйста, попробуйте снова."
+    }
+    
   },
   "ar": {
     "title": "صراف NCR",
@@ -184,6 +318,26 @@
     "withdrawCustomAmount": "سحب مبلغ مخصص",
     "depositCustomAmount": "إيداع مبلغ مخصص",
     "close": "إغلاق",
-    "invalidTransaction": "معاملة غير صالحة"
+    "invalidTransaction": "معاملة غير صالحة",
+    "selectAccount": "اختر الحساب",
+    "account": "حساب",
+    "enterPIN": "أدخل الرقم السري",
+    "cancel": "إلغاء",
+    "login": "تسجيل الدخول",
+    "withdrawDescription": "اختر المبلغ الذي تريد سحبه",
+    "depositDescription": "اختر المبلغ الذي تريد إيداعه",
+    "balanceDescription": "عرض رصيد حسابك",
+    "confirm": "تأكيد",
+    "clear": "مسح",
+    "errors": {
+      "connectionError": "خطأ في الاتصال. يرجى المحاولة مرة أخرى.",
+      "systemError": "خطأ في النظام. يرجى المحاولة لاحقاً.",
+      "cardBlocked": "البطاقة محظورة. يرجى الاتصال بالدعم.",
+      "cardNotRecognized": "لم يتم التعرف على البطاقة.",
+      "cardExpired": "البطاقة منتهية الصلاحية.",
+      "incorrectPinLast": "رقم التعريف الشخصي غير صحيح. المحاولة الأخيرة المتبقية",
+      "incorrectPinAttempts": "رقم التعريف الشخصي غير صحيح. {attempts} محاولات متبقية",
+      "cardInvalid": "بطاقة غير صالحة. يرجى المحاولة مرة أخرى."
+    }
   }
 }
