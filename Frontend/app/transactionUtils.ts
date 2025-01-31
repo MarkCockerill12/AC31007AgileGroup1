@@ -109,16 +109,21 @@ export const handleBalanceRequest = async (
 export const useErrorPopup = () => {
   const [showPopup, setShowPopup] = useState(false)
   const [popupMessage, setPopupMessage] = useState("")
+  const [callback, setCallback] = useState<(() => void) | null>(null)
 
-  const showErrorPopup = (message: string) => {
+  const showErrorPopup = (message: string, cb?: () => void) => {
     setPopupMessage(message)
+    setCallback(() => cb || null)
     setShowPopup(true)
   }
 
   const closeErrorPopup = () => {
     setShowPopup(false)
+    if (callback) {
+      callback()
+    }
+    setCallback(null)
   }
 
   return { showPopup, popupMessage, showErrorPopup, closeErrorPopup }
 }
-

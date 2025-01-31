@@ -143,18 +143,20 @@ export function Deposit({ CardNumber, PIN, balance, setBalance, setShowSummary, 
             </div>
           </div>
         )}
+        
+        <div className="mt-8 flex items-center">
+          <img
+            src="/assets/backButton.png"
+            alt="Back Icon"
+            className="w-6 h-6 cursor-pointer mr-2"
+            onClick={handleGoBack}
+          />
+          <button className="text-white font-bold text-lg hover:underline" onClick={handleGoBack}>
+            {t.goBack}
+          </button>
+        </div>
       </motion.div>
-      <div className="mt-8 flex items-center">
-        <img
-          src="/assets/backButton.png"
-          alt="Back Icon"
-          className="w-6 h-6 cursor-pointer mr-2"
-          onClick={handleGoBack}
-        />
-        <button className="text-white font-bold text-lg hover:underline" onClick={handleGoBack}>
-          {t.goBack}
-        </button>
-      </div>
+      
       <div className="fixed top-0 right-0 mt-4 mr-4 text-white mainText text-4xl font-bold mb-4">NCR</div>
     </>
   );
