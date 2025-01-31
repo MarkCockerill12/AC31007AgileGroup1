@@ -50,14 +50,16 @@ export function Withdraw({
         const response = await handleSendTransaction(1, convertedAmount, CardNumber, PIN, setResponse);
         if (response.RespType === 0) {
           setTransactionAmount(convertedAmount);
-          setBalance(prev => prev - amount); // Use GBP amount for display
+          setBalance(prev => prev - amount);
           setShowSummary(true);
         } else {
-          showErrorPopup(response.msg || "Transaction failed. Please try again.");
+          showErrorPopup(response.msg);
         }
+      } else {
+        showErrorPopup(balanceResponse.msg);
       }
     } catch (error) {
-      showErrorPopup("Connection error. Please try again.");
+      showErrorPopup(error.msg || "Connection error. Please try again.");
     }
   };
 

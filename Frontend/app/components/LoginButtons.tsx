@@ -94,9 +94,9 @@ export function LoginButtons({ setCardNumber, setPIN, setShowSummary, setRespons
           case 2:
             setLoginAttempts(prev => {
               const newAttempts = prev + 1;
-              if (newAttempts >= 4) {
+              if (newAttempts >= 4) { // Last attempt
                 showErrorPopup(t.errors.incorrectPinLast, () => window.location.reload());
-              } else {
+              } else { // Still has attempts remaining
                 showErrorPopup(t.errors.incorrectPinAttempts.replace("{attempts}", (4 - newAttempts).toString()));
               }
               return newAttempts;

@@ -38,7 +38,7 @@
       "cardBlocked": "Card blocked. Please contact support.",
       "cardNotRecognized": "Card not recognized.",
       "cardExpired": "Card expired.",
-      "incorrectPinLast": "Incorrect PIN. Last attempt remaining",
+      "incorrectPinLast": "Incorrect PIN. No attempts attempt remaining",
       "incorrectPinAttempts": "Incorrect PIN. {attempts} attempts remaining",
       "cardInvalid": "Invalid card. Please try again."
     }

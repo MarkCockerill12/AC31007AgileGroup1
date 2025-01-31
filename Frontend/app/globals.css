@@ -5,6 +5,7 @@ Tailwind CSS file with overrides for certain elements of CSS
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+@import url('https://fonts.googleapis.com/css2?family=Exo+2:ital,wght@0,100..900;1,100..900&display=swap');
 
 html, body {
   background-image: linear-gradient(to right, #1e3a8a,
@@ -27,6 +28,5 @@ button:hover {
   color: red; /* Adjust the hover text color as needed */
 }
 
-* {
-  /* font-family: 'Comic Sans MS', 'Comic Sans', cursive; */
+* {  /* font-family: 'Comic Sans MS', 'Comic Sans', cursive; */
 }
